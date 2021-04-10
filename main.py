@@ -68,9 +68,9 @@ epsilon_dec = 1e-5
 mem_size = 10000
 batch_size = 32
 checkpoint_dir = 'models'
-name = 'ddqn_simple_random_start'
+name = 'ddqn_simple_start'
 
-env = Environment(random_starting=True)
+env = Environment(random_starting=False)
 
 n_states = env.num_states
 n_actions = env.num_actions
@@ -191,7 +191,7 @@ if __name__ == '__main__':
         if i % 50 == 0:
             print('############################\nepoch', i, '50 games avg SCORE:', np.mean(scores[-50:]), '50 games win pct',
                   wins/50, '\n##################\n')
-            plot_scores_testing(scores, 50, 'plots/' + name + '_eval.png')
+            plot_scores_testing(scores, 50, 'plots/' + name + 'eval.png')
             wins = 0
 
 
