@@ -10,7 +10,8 @@ class Environment:
         self.length = 4
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length))
-        self.source_matrix[1] = 1
+        self.source_matrix[1] = 1  # draw a line in the second row
+        # self.source_matrix[random.randint(0, self.length - 1)] = 1  # to randomize the horizontal line to draw
         self.canvas = np.zeros((self.length, self.length))
         self.current_state = 0
         self.row = 0
@@ -33,7 +34,8 @@ class Environment:
 
     def reset(self):
         self.source_matrix = np.zeros((self.length, self.length))
-        self.source_matrix[1] = 1  # draw a line
+        self.source_matrix[1] = 1  # draw a line in the second row
+        # self.source_matrix[random.randint(0, self.length - 1)] = 1  # to randomize the horizontal line to draw
         self.canvas = np.zeros((self.length, self.length))
         self.current_state = 0
         self.row = 0
@@ -93,8 +95,6 @@ class Environment:
         self.step_count += 1
 
         return (self.source_matrix, self.canvas, self.current_state), reward, self.done
-
-
 
 
 
