@@ -21,10 +21,10 @@ class DDQN(nn.Module):
 
         self.fc1 = nn.Linear(input_n, n_hidden)
         self.fc2 = nn.Linear(n_hidden, output_n)
-        self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
-        # self.optimizer = optim.Adam(self.parameters(), lr=lr)
-        # self.loss = nn.MSELoss()
-        self.loss = nn.SmoothL1Loss()
+        # self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
+        self.loss = nn.MSELoss()
+        #self.loss = nn.SmoothL1Loss()
 
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.to(self.device)
