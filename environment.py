@@ -6,12 +6,10 @@ from PIL import Image
 
 
 class Environment:
-    def __init__(self, random_starting=False):
+    def __init__(self, random_starting_pos=False, random_horizontal_line=False):
         self.length = 4
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length))
-        self.source_matrix[1] = 1  # draw a line in the second row
-        # self.source_matrix[random.randint(0, self.length - 1)] = 1  # to randomize the horizontal line to draw
         self.canvas = np.zeros((self.length, self.length))
         self.current_state = 0
         self.row = 0
@@ -26,22 +24,25 @@ class Environment:
 
         self.num_actions = len(self.actions)
 
-        self.random_starting = random_starting
-        if self.random_starting:
-            self.current_state = random.randint(0, self.max_state)
-            self.row = self.current_state // self.length
-            self.column = self.current_state % self.length
+        self.random_starting_pos = random_starting_pos
+        self.random_horizontal_line = random_horizontal_line
+        # if self.random_starting_pos:
+        #     self.current_state = random.randint(0, self.max_state)
+        #     self.row = self.current_state // self.length
+        #     self.column = self.current_state % self.length
 
     def reset(self):
         self.source_matrix = np.zeros((self.length, self.length))
-        self.source_matrix[1] = 1  # draw a line in the second row
-        # self.source_matrix[random.randint(0, self.length - 1)] = 1  # to randomize the horizontal line to draw
+        if self.random_horizontal_line:
+            self.source_matrix[random.randint(0, self.length - 1)] = 1  # randomize the horizontal line to draw
+        else:
+            self.source_matrix[1] = 1  # draw a line in the second row
         self.canvas = np.zeros((self.length, self.length))
         self.current_state = 0
         self.row = 0
         self.column = 0
 
-        if self.random_starting:
+        if self.random_starting_pos:
             self.current_state = random.randint(0, self.max_state)
             self.row = self.current_state // self.length
             self.column = self.current_state % self.length

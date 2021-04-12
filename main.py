@@ -59,18 +59,31 @@ def plot_scores_testing(scores, n_episodes_to_consider, figure_file):
     plt.savefig(figure_file)
 
 
-replace = 200
-lr = 0.01
-gamma = 0.5
+replace = 500
+lr = 0.001
+gamma = 0.9
 epsilon = 0.6
 epsilon_min = 0.0
 epsilon_dec = 1e-5
-mem_size = 10000
+mem_size = 50000
 batch_size = 32
 checkpoint_dir = 'models'
-name = 'ddqn_simple_start'
 
-env = Environment(random_starting=False)
+
+tests_todo = ['ddqn_00_start_fixed_line', 'ddqn_random_start_fixed_line_pos', 'ddqn_00_start_random_line_pos', 'ddqn_random_start_random_line_pos']
+TEST_N = 0
+
+name = tests_todo[TEST_N]
+
+if TEST_N == 0:
+    env = Environment(random_starting_pos=False, random_horizontal_line=False)
+elif TEST_N == 1:
+    env = Environment(random_starting_pos=True, random_horizontal_line=False)
+elif TEST_N == 2:
+    env = Environment(random_starting_pos=False, random_horizontal_line=True)
+elif TEST_N == 3:
+    env = Environment(random_starting_pos=True, random_horizontal_line=True)
+
 
 n_states = env.num_states
 n_actions = env.num_actions
@@ -191,7 +204,7 @@ if __name__ == '__main__':
         if i % 50 == 0:
             print('############################\nepoch', i, '50 games avg SCORE:', np.mean(scores[-50:]), '50 games win pct',
                   wins/50, '\n##################\n')
-            plot_scores_testing(scores, 50, 'plots/' + name + 'eval.png')
+            plot_scores_testing(scores, 50, 'plots/' + name + '_eval.png')
             wins = 0
 
 
