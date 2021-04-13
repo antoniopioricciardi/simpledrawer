@@ -66,7 +66,6 @@ class Agent:
         # if memory has not been filled yet, return
         if self.memory.mem_counter < self.batch_size:
             return
-
         self.eval_Q.optimizer.zero_grad()
         self.replace_target_network()
 

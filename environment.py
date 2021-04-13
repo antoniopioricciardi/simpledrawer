@@ -94,10 +94,11 @@ class Environment:
             self.row = self.current_state // self.length
             self.column = self.current_state % self.length
 
+
         # simple start - working
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
-        reward = -0.5  # -1 per step
+        reward = -1  # -1 per step
 
         if self.source_matrix[self.row][self.column] == 1:
             reward = 0  # unless the agent is in a cell that must be colored
@@ -124,30 +125,3 @@ class Environment:
         self.step_count += 1
 
         return (self.source_matrix, self.canvas, self.current_state), reward, self.done
-
-
-
-        # simple start - working
-        # '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
-        # if we colored the correct cell, get +1 reward'''
-        # reward = -1  # -1 per step
-        #
-        # if self.source_matrix[self.row][self.column] == 1:
-        #     reward = 0  # unless the agent is in a cell that must be colored
-        #
-        # if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
-        #     if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-        #         reward = 1  # if we colored the correct cell, get +1 reward
-        #     self.canvas[self.row][self.column] = 1
-        #
-        # # if all the correct cells are colored, the episode can end
-        # if np.sum(self.canvas[1] == 1) == self.length:
-        #     #reward = 100
-        #     self.done = True
-        # if self.step_count == self.max_steps:
-        #     self.done = True
-        #     #if np.sum(self.canvas[1] == 1) != self.length:
-        #     #    reward = -100
-        # self.step_count += 1
-        #
-        # return (self.source_matrix, self.canvas, self.current_state), reward, self.done
