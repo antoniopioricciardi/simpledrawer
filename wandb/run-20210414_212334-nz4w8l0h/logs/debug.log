@@ -1,0 +1,37 @@
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_setup.py:_flush():69] setting env: {'project': 'simpledrawer-ddqn_00_start_fixed_line', 'entity': 'riccir', 'root_dir': '/home/antoniopioricciardi/PycharmProjects/simpledrawer', 'run_id': 'nz4w8l0h', 'sweep_param_path': '/home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/sweep-ibv9t6vp/config-nz4w8l0h.yaml', 'sweep_id': 'ibv9t6vp'}
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_init.py:_log_setup():336] Logging user logs to /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210414_212334-nz4w8l0h/logs/debug.log
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_init.py:_log_setup():337] Logging internal logs to /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210414_212334-nz4w8l0h/logs/debug-internal.log
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_init.py:init():369] calling init triggers
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_init.py:init():374] wandb.init called with sweep_config: {'batch_size': 32, 'fc_layer_size': 256, 'gamma': 0.6, 'learning_rate': 0.01}
+config: {'max_steps': 200000, 'batch_size': 32, 'learning_rate': 0.001, 'gamma': 0.6, 'optimizer': 'adam', 'fc_layer_size': 128}
+2021-04-14 21:23:34,947 INFO    Thread-67 :20298 [wandb_init.py:init():418] starting backend
+2021-04-14 21:23:34,948 INFO    Thread-67 :20298 [backend.py:_multiprocessing_setup():69] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-04-14 21:23:34,950 INFO    Thread-67 :20298 [backend.py:ensure_launched():123] starting backend process...
+2021-04-14 21:23:34,969 INFO    Thread-67 :20298 [backend.py:ensure_launched():127] started backend process with pid: 23287
+2021-04-14 21:23:34,970 INFO    Thread-67 :20298 [wandb_init.py:init():423] backend started and connected
+2021-04-14 21:23:34,971 INFO    Thread-67 :20298 [wandb_run.py:_config_callback():749] config_cb None None {'batch_size': 32, 'fc_layer_size': 256, 'gamma': 0.6, 'learning_rate': 0.01}
+2021-04-14 21:23:34,972 INFO    Thread-67 :20298 [wandb_init.py:init():463] updated telemetry
+2021-04-14 21:23:34,972 INFO    Thread-67 :20298 [wandb_init.py:init():482] communicating current version
+2021-04-14 21:23:35,469 INFO    Thread-67 :20298 [wandb_init.py:init():487] got version response upgrade_message: "wandb version 0.10.26 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2021-04-14 21:23:35,469 INFO    Thread-67 :20298 [wandb_init.py:init():495] communicating run to backend with 30 second timeout
+2021-04-14 21:23:35,764 INFO    Thread-67 :20298 [wandb_init.py:init():520] starting run threads in backend
+2021-04-14 21:23:35,786 INFO    Thread-67 :20298 [wandb_run.py:_console_start():1524] atexit reg
+2021-04-14 21:23:35,787 INFO    Thread-67 :20298 [wandb_run.py:_redirect():1371] redirect: SettingsConsole.REDIRECT
+2021-04-14 21:23:35,787 INFO    Thread-67 :20298 [wandb_run.py:_redirect():1376] Redirecting console.
+2021-04-14 21:23:35,787 ERROR   Thread-67 :20298 [wandb_run.py:_redirect():1441] Failed to redirect.
+Traceback (most recent call last):
+  File "/home/antoniopioricciardi/PycharmProjects/simpledrawer/venv/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1434, in _redirect
+    out_redir.install()
+  File "/home/antoniopioricciardi/PycharmProjects/simpledrawer/venv/lib/python3.8/site-packages/wandb/sdk/lib/redirect.py", line 605, in install
+    _WSCH.add_fd(self._pipe_read_fd)
+  File "/home/antoniopioricciardi/PycharmProjects/simpledrawer/venv/lib/python3.8/site-packages/wandb/sdk/lib/redirect.py", line 555, in add_fd
+    self._register()
+  File "/home/antoniopioricciardi/PycharmProjects/simpledrawer/venv/lib/python3.8/site-packages/wandb/sdk/lib/redirect.py", line 540, in _register
+    old_handler = signal.signal(signal.SIGWINCH, lambda *_: None)
+  File "/usr/lib/python3.8/signal.py", line 47, in signal
+    handler = _signal.signal(_enum_to_int(signalnum), _enum_to_int(handler))
+ValueError: signal only works in main thread
+2021-04-14 21:23:35,787 INFO    Thread-67 :20298 [wandb_init.py:init():544] run started, returning control to user process
+2021-04-14 21:27:17,049 INFO    Thread-67 :20298 [wandb_run.py:finish():1167] finishing run riccir/simpledrawer-ddqn_00_start_fixed_line/nz4w8l0h
