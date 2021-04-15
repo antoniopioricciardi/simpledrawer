@@ -4,14 +4,16 @@ import pprint
 import random
 import numpy as np
 
-from PIL import Image
+# from PIL import Image
 from agent import Agent
 from utils_plot import *
 from environment import Environment
+# os.environ["WANDB_API_KEY"] = "18473359ab7daf7626d168b95162c11133996567"
+# os.environ["WANDB_MODE"] = "dryrun"
 wandb.login()
 
-TRAINING = True  # False if we want to skip training
-TESTING = False  # True if we want to test
+TRAINING = False  # False if we want to skip training
+TESTING = True  # True if we want to test
 
 tests_todo = ['ddqn_00_start_fixed_line', 'ddqn_random_start_fixed_line_pos', 'ddqn_00_start_random_line_pos', 'ddqn_random_start_random_line_pos']
 TEST_N = 0  # 0 to 3 to choose the environment property from those in the list above
@@ -40,16 +42,16 @@ sweep_config = {
         #     'values': [2, 5, 10]
         # },
         'batch_size': {
-            'values': [16, 32, 64]
+            'values': [64]
         },
         'learning_rate': {
-            'values': [1e-2, 1e-3]
+            'values': [1e-3]
         },
         'gamma': {
             'values': [0.6]#, 0.9]
         },
         'fc_layer_size': {
-            'values': [32, 64, 128, 256, 512]
+            'values': [64, 256]
         }
         # 'fc_layer_size':{
         #     'values':[128,256,512]
@@ -61,7 +63,6 @@ sweep_config = {
 }
 
 sweep_id = wandb.sweep(sweep_config, project="simpledrawer-" + test_name)
-
 
 '''
 filepath = os.path.join('shapes', 'line_1.png')
@@ -89,7 +90,7 @@ def train():
     }
 
     # Initialize a new wandb run
-    wandb.init(config=config_defaults)
+    wandb.init(config=config_defaults, WANDB_MODE='dryrun')
     # Config is a variable that holds and saves hyperparameters and inputs
     config = wandb.config
 
@@ -190,6 +191,7 @@ def train():
             test_score = 0
             test_scores = []
             for test_game_idx in range(n_test_games):
+                state = env.reset()
                 while not done:
                     # print(agent.epsilon)
                     env.render()
@@ -292,9 +294,9 @@ def test():
 
     n_states = env.num_states
     n_actions = env.num_actions
-    n_hidden = 128
+    n_hidden = 64
 
-    name = 'ddqn_00_start_fixed_line_lr0.001_gamma0.9_epsilon0.7_batch_size32_fc_size128'
+    name = 'ddqn_00_start_fixed_line_lr0.001_gamma0.6_epsilon0.7_batch_size64_fc_size64'
 
     agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
                   batch_size, name, checkpoint_dir)
