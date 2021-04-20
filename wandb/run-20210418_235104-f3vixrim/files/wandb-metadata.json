@@ -1,0 +1,24 @@
+{
+    "os": "Linux-5.11.0-7612-generic-x86_64-with-glibc2.29",
+    "python": "3.8.5",
+    "heartbeatAt": "2021-04-18T21:51:05.441541",
+    "startedAt": "2021-04-18T21:51:04.654287",
+    "docker": null,
+    "gpu": "GeForce RTX 2070 SUPER",
+    "gpu_count": 1,
+    "cpu_count": 12,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/antoniopioricciardi/PycharmProjects/simpledrawer/main.py",
+    "codePath": "main.py",
+    "git": {
+        "remote": "https://github.com/antoniopioricciardi/simpledrawer.git",
+        "commit": "2232511614ed2bf2c88de4fe1f95e9d603eb3c3e"
+    },
+    "email": null,
+    "root": "/home/antoniopioricciardi/PycharmProjects/simpledrawer",
+    "host": "pop-os",
+    "username": "antoniopioricciardi",
+    "executable": "/home/antoniopioricciardi/PycharmProjects/simpledrawer/venv/bin/python"
+}

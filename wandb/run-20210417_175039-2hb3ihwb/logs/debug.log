@@ -1,0 +1,152 @@
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_setup.py:_flush():69] setting env: {}
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_init.py:_log_setup():336] Logging user logs to /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210417_175039-2hb3ihwb/logs/debug.log
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_init.py:_log_setup():337] Logging internal logs to /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210417_175039-2hb3ihwb/logs/debug-internal.log
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_init.py:init():369] calling init triggers
+2021-04-17 17:50:39,281 INFO    MainThread:9836 [wandb_init.py:init():374] wandb.init called with sweep_config: {}
+config: {'replace': 1000, 'learning_rate': 0.001, 'gamma': 0.6, 'epsilon': 0.7, 'epsilon_min': 0.0, 'epsilon_dec': 1e-05, 'mem_size': 50000, 'batch_size': 32, 'optimizer': 'adam', 'fc_layer_size': 128, 'max_steps': 200000}
+2021-04-17 17:50:39,282 INFO    MainThread:9836 [wandb_init.py:init():418] starting backend
+2021-04-17 17:50:39,282 INFO    MainThread:9836 [backend.py:_multiprocessing_setup():69] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-04-17 17:50:39,286 INFO    MainThread:9836 [backend.py:ensure_launched():123] starting backend process...
+2021-04-17 17:50:39,288 INFO    MainThread:9836 [backend.py:ensure_launched():127] started backend process with pid: 9867
+2021-04-17 17:50:39,289 INFO    MainThread:9836 [wandb_init.py:init():423] backend started and connected
+2021-04-17 17:50:39,291 INFO    MainThread:9836 [wandb_init.py:init():463] updated telemetry
+2021-04-17 17:50:39,291 INFO    MainThread:9836 [wandb_init.py:init():482] communicating current version
+2021-04-17 17:50:39,786 INFO    MainThread:9836 [wandb_init.py:init():487] got version response upgrade_message: "wandb version 0.10.26 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2021-04-17 17:50:39,786 INFO    MainThread:9836 [wandb_init.py:init():495] communicating run to backend with 30 second timeout
+2021-04-17 17:50:40,099 INFO    MainThread:9836 [wandb_init.py:init():520] starting run threads in backend
+2021-04-17 17:50:40,123 INFO    MainThread:9836 [wandb_run.py:_console_start():1524] atexit reg
+2021-04-17 17:50:40,124 INFO    MainThread:9836 [wandb_run.py:_redirect():1371] redirect: SettingsConsole.REDIRECT
+2021-04-17 17:50:40,124 INFO    MainThread:9836 [wandb_run.py:_redirect():1376] Redirecting console.
+2021-04-17 17:50:40,125 INFO    MainThread:9836 [wandb_run.py:_redirect():1438] Redirects installed.
+2021-04-17 17:50:40,125 INFO    MainThread:9836 [wandb_init.py:init():544] run started, returning control to user process
+2021-04-17 17:57:11,513 INFO    MainThread:9836 [wandb_agent.py:run():208] Running runs: []
+2021-04-17 17:57:11,923 INFO    MainThread:9836 [wandb_agent.py:_process_command():288] Agent received command: run
+2021-04-17 17:57:11,923 INFO    MainThread:9836 [wandb_agent.py:_command_run():320] Agent starting run with config:
+	batch_size: 32
+	fc_layer_size: 64
+	gamma: 0.6
+	learning_rate: 0.001
+2021-04-17 17:57:11,925 INFO    MainThread:9836 [wandb_agent.py:_command_run():409] About to run command: /usr/bin/env python  --batch_size=32 --fc_layer_size=64 --gamma=0.6 --learning_rate=0.001
+2021-04-17 17:57:16,977 INFO    MainThread:9836 [wandb_agent.py:run():208] Running runs: ['hrv2zgtj']
+2021-04-17 17:57:16,978 INFO    MainThread:9836 [wandb_agent.py:run():243] Cleaning up finished run: hrv2zgtj
+2021-04-17 17:57:17,341 INFO    MainThread:9836 [wandb_agent.py:_process_command():288] Agent received command: run
+2021-04-17 17:57:17,341 INFO    MainThread:9836 [wandb_agent.py:_command_run():320] Agent starting run with config:
+	batch_size: 32
+	fc_layer_size: 64
+	gamma: 0.9
+	learning_rate: 0.001
+2021-04-17 17:57:17,343 INFO    MainThread:9836 [wandb_agent.py:_command_run():409] About to run command: /usr/bin/env python  --batch_size=32 --fc_layer_size=64 --gamma=0.9 --learning_rate=0.001
+2021-04-17 17:57:22,391 INFO    MainThread:9836 [wandb_agent.py:run():208] Running runs: ['629bos16']
+2021-04-17 17:57:22,392 INFO    MainThread:9836 [wandb_agent.py:run():243] Cleaning up finished run: 629bos16
+2021-04-17 17:57:22,750 INFO    MainThread:9836 [wandb_agent.py:_process_command():288] Agent received command: run
+2021-04-17 17:57:22,750 INFO    MainThread:9836 [wandb_agent.py:_command_run():320] Agent starting run with config:
+	batch_size: 32
+	fc_layer_size: 128
+	gamma: 0.6
+	learning_rate: 0.001
+2021-04-17 17:57:22,752 INFO    MainThread:9836 [wandb_agent.py:_command_run():409] About to run command: /usr/bin/env python  --batch_size=32 --fc_layer_size=128 --gamma=0.6 --learning_rate=0.001
+2021-04-17 17:57:27,802 INFO    MainThread:9836 [wandb_agent.py:run():208] Running runs: ['ntrzya8z']
+2021-04-17 17:57:27,803 INFO    MainThread:9836 [wandb_agent.py:run():243] Cleaning up finished run: ntrzya8z
+2021-04-17 17:57:28,165 INFO    MainThread:9836 [wandb_agent.py:_process_command():288] Agent received command: run
+2021-04-17 17:57:28,165 INFO    MainThread:9836 [wandb_agent.py:_command_run():320] Agent starting run with config:
+	batch_size: 32
+	fc_layer_size: 128
+	gamma: 0.9
+	learning_rate: 0.001
+2021-04-17 17:57:28,167 INFO    MainThread:9836 [wandb_agent.py:_command_run():409] About to run command: /usr/bin/env python  --batch_size=32 --fc_layer_size=128 --gamma=0.9 --learning_rate=0.001
+2021-04-17 17:57:33,214 INFO    MainThread:9836 [wandb_agent.py:run():208] Running runs: ['2dh6seca']
+2021-04-17 17:57:33,215 INFO    MainThread:9836 [wandb_agent.py:run():243] Cleaning up finished run: 2dh6seca
+2021-04-17 17:57:33,573 INFO    MainThread:9836 [wandb_agent.py:_process_command():288] Agent received command: run
+2021-04-17 17:57:33,574 INFO    MainThread:9836 [wandb_agent.py:_command_run():320] Agent starting run with config:
+	batch_size: 32
+	fc_layer_size: 256
+	gamma: 0.6
+	learning_rate: 0.001
+2021-04-17 17:57:33,575 INFO    MainThread:9836 [wandb_agent.py:_command_run():409] About to run command: /usr/bin/env python  --batch_size=32 --fc_layer_size=256 --gamma=0.6 --learning_rate=0.001
+2021-04-17 17:57:38,627 INFO    MainThread:9836 [wandb_agent.py:run():208] Running runs: ['9yscq3xn']
+2021-04-17 17:57:38,628 ERROR   MainThread:9836 [wandb_agent.py:run():234] Detected 5 failed runs in a row, shutting down.
+2021-04-17 17:57:38,630 INFO    MainThread:9836 [wandb_agent.py:run():238] To change this value set WANDB_AGENT_MAX_INITIAL_FAILURES=val
+2021-04-17 17:57:38,632 INFO    MainThread:9836 [wandb_run.py:_atexit_cleanup():1494] got exitcode: 0
+2021-04-17 17:57:38,632 INFO    MainThread:9836 [wandb_run.py:_restore():1466] restore
+2021-04-17 17:57:40,920 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 847
+  total_bytes: 847
+}
+
+2021-04-17 17:57:41,217 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 847
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:41,591 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 847
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:41,692 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 2525
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:41,794 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 2525
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:41,896 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 2525
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:41,998 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 2525
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:42,099 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 2525
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:42,202 INFO    MainThread:9836 [wandb_run.py:_wait_for_finish():1616] got exit ret: done: true
+exit_result {
+}
+file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 2525
+  total_bytes: 2525
+}
+
+2021-04-17 17:57:43,262 INFO    MainThread:9836 [wandb_run.py:_show_summary():1771] rendering summary
+2021-04-17 17:57:43,262 INFO    MainThread:9836 [wandb_run.py:_show_history():1809] rendering history
+2021-04-17 17:57:43,263 INFO    MainThread:9836 [wandb_run.py:_show_files():1838] logging synced files

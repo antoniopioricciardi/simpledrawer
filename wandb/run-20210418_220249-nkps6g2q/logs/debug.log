@@ -1,0 +1,15 @@
+2021-04-18 22:02:49,022 INFO    Thread-3  :17409 [wandb_setup.py:_flush():69] setting env: {'project': 'simpledrawer-ddqn_random_start_fixed_line_pos', 'entity': 'riccir', 'root_dir': '/home/antoniopioricciardi/PycharmProjects/simpledrawer', 'sweep_id': '1e9go1lx', 'run_id': 'nkps6g2q', 'sweep_param_path': '/home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/sweep-1e9go1lx/config-nkps6g2q.yaml'}
+2021-04-18 22:02:49,022 INFO    Thread-3  :17409 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-04-18 22:02:49,022 INFO    Thread-3  :17409 [wandb_init.py:_log_setup():336] Logging user logs to /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210418_220249-nkps6g2q/logs/debug.log
+2021-04-18 22:02:49,022 INFO    Thread-3  :17409 [wandb_init.py:_log_setup():337] Logging internal logs to /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210418_220249-nkps6g2q/logs/debug-internal.log
+2021-04-18 22:02:49,023 INFO    Thread-3  :17409 [wandb_init.py:init():369] calling init triggers
+2021-04-18 22:02:49,023 INFO    Thread-3  :17409 [wandb_init.py:init():374] wandb.init called with sweep_config: {'batch_size': 32, 'fc_layer_size': 128, 'gamma': 0.6, 'learning_rate': 0.001}
+config: {'replace': 1000, 'learning_rate': 0.001, 'gamma': 0.6, 'epsilon': 0.7, 'epsilon_min': 0.0, 'epsilon_dec': 1e-05, 'mem_size': 50000, 'batch_size': 32, 'optimizer': 'adam', 'fc_layer_size': 128, 'max_steps': 200000}
+2021-04-18 22:02:49,023 INFO    Thread-3  :17409 [wandb_init.py:init():418] starting backend
+2021-04-18 22:02:49,023 INFO    Thread-3  :17409 [backend.py:_multiprocessing_setup():69] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-04-18 22:02:49,031 INFO    Thread-3  :17409 [backend.py:ensure_launched():123] starting backend process...
+2021-04-18 22:02:49,036 INFO    Thread-3  :17409 [backend.py:ensure_launched():127] started backend process with pid: 17444
+2021-04-18 22:02:49,037 INFO    Thread-3  :17409 [wandb_init.py:init():423] backend started and connected
+2021-04-18 22:02:49,038 INFO    Thread-3  :17409 [wandb_run.py:_config_callback():749] config_cb None None {'batch_size': 32, 'fc_layer_size': 128, 'gamma': 0.6, 'learning_rate': 0.001}
+2021-04-18 22:02:49,039 INFO    Thread-3  :17409 [wandb_init.py:init():463] updated telemetry
+2021-04-18 22:02:49,039 INFO    Thread-3  :17409 [wandb_init.py:init():482] communicating current version

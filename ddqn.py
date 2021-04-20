@@ -20,7 +20,8 @@ class DDQN(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
 
         self.fc1 = nn.Linear(input_n, n_hidden)
-        self.fc2 = nn.Linear(n_hidden, output_n)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.fc3 = nn.Linear(n_hidden, output_n)
         # self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
@@ -31,11 +32,14 @@ class DDQN(nn.Module):
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
-        actions = self.fc2(x)  # action values
+        x = F.relu(self.fc2(x))  # action values
+
+        actions = self.fc3(x)  # action values
 
         return actions
 
     def save_checkpoint(self):
+        print('....saving model....')
         torch.save(self.state_dict(), self.checkpoint_file)
 
     def load_checkpoint(self):

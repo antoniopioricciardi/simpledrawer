@@ -27,7 +27,9 @@ class Agent:
     def is_training(self, training=True):
         if training:
             self.eval_Q.train()
+            self.target_Q.train()
         else:
+            self.eval_Q.eval()
             self.eval_Q.eval()
 
     def decrement_epsilon(self):
@@ -38,7 +40,7 @@ class Agent:
             action = np.random.choice(self.n_actions)
         else:
             # input_dims is a batch, therefore we need to create a batch for every single observation
-            state = torch.tensor([state], dtype=torch.float).to(self.eval_Q.device)
+            state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
             actions = self.eval_Q.forward(state)
             action = torch.argmax(actions).item()
         return action

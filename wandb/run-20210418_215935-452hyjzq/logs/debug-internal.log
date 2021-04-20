@@ -1,0 +1,79 @@
+2021-04-18 21:59:35,903 INFO    MainThread:17063 [internal.py:wandb_internal():88] W&B internal server running at pid: 17063, started at: 2021-04-18 21:59:35.903617
+2021-04-18 21:59:35,905 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: check_version
+2021-04-18 21:59:35,905 INFO    WriterThread:17063 [datastore.py:open_for_write():77] open: /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210418_215935-452hyjzq/run-452hyjzq.wandb
+2021-04-18 21:59:35,906 DEBUG   SenderThread:17063 [sender.py:send():160] send: header
+2021-04-18 21:59:35,906 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:35,906 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: check_version
+2021-04-18 21:59:36,059 DEBUG   SenderThread:17063 [sender.py:send():160] send: run
+2021-04-18 21:59:36,364 INFO    SenderThread:17063 [sender.py:_start_run_threads():651] run started: 452hyjzq with start time 1618775975
+2021-04-18 21:59:36,365 DEBUG   SenderThread:17063 [sender.py:send():160] send: summary
+2021-04-18 21:59:36,365 INFO    SenderThread:17063 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2021-04-18 21:59:36,366 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: run_start
+2021-04-18 21:59:36,369 DEBUG   HandlerThread:17063 [meta.py:__init__():34] meta init
+2021-04-18 21:59:36,369 DEBUG   HandlerThread:17063 [meta.py:__init__():48] meta init done
+2021-04-18 21:59:36,369 DEBUG   HandlerThread:17063 [meta.py:probe():190] probe
+2021-04-18 21:59:36,375 DEBUG   HandlerThread:17063 [meta.py:_setup_git():180] setup git
+2021-04-18 21:59:36,386 DEBUG   HandlerThread:17063 [meta.py:_setup_git():187] setup git done
+2021-04-18 21:59:36,386 DEBUG   HandlerThread:17063 [meta.py:_save_pip():52] save pip
+2021-04-18 21:59:36,386 DEBUG   HandlerThread:17063 [meta.py:_save_pip():66] save pip done
+2021-04-18 21:59:36,386 DEBUG   HandlerThread:17063 [meta.py:probe():231] probe done
+2021-04-18 21:59:36,390 DEBUG   SenderThread:17063 [sender.py:send():160] send: files
+2021-04-18 21:59:36,390 INFO    SenderThread:17063 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2021-04-18 21:59:36,394 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: status
+2021-04-18 21:59:36,395 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:36,395 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: status
+2021-04-18 21:59:41,739 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: poll_exit
+2021-04-18 21:59:41,739 DEBUG   SenderThread:17063 [sender.py:send():160] send: telemetry
+2021-04-18 21:59:41,996 DEBUG   SenderThread:17063 [sender.py:send():160] send: exit
+2021-04-18 21:59:41,996 INFO    SenderThread:17063 [sender.py:send_exit():238] handling exit code: 1
+2021-04-18 21:59:41,996 INFO    SenderThread:17063 [sender.py:send_exit():246] send defer
+2021-04-18 21:59:41,996 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:41,996 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: poll_exit
+2021-04-18 21:59:41,997 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: defer
+2021-04-18 21:59:41,997 INFO    HandlerThread:17063 [handler.py:handle_request_defer():134] handle defer: 0
+2021-04-18 21:59:41,997 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:41,997 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: defer
+2021-04-18 21:59:41,997 INFO    SenderThread:17063 [sender.py:send_request_defer():255] handle sender defer: 0
+2021-04-18 21:59:41,997 INFO    SenderThread:17063 [sender.py:send_request_defer():291] send defer: 1
+2021-04-18 21:59:41,997 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: defer
+2021-04-18 21:59:41,997 INFO    HandlerThread:17063 [handler.py:handle_request_defer():134] handle defer: 1
+2021-04-18 21:59:42,035 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:42,035 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: defer
+2021-04-18 21:59:42,035 INFO    SenderThread:17063 [sender.py:send_request_defer():255] handle sender defer: 1
+2021-04-18 21:59:42,035 INFO    SenderThread:17063 [sender.py:send_request_defer():291] send defer: 2
+2021-04-18 21:59:42,035 DEBUG   SenderThread:17063 [sender.py:send():160] send: stats
+2021-04-18 21:59:42,036 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: defer
+2021-04-18 21:59:42,037 INFO    HandlerThread:17063 [handler.py:handle_request_defer():134] handle defer: 2
+2021-04-18 21:59:42,038 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:42,038 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: defer
+2021-04-18 21:59:42,038 INFO    SenderThread:17063 [sender.py:send_request_defer():255] handle sender defer: 2
+2021-04-18 21:59:42,038 INFO    SenderThread:17063 [sender.py:send_request_defer():291] send defer: 3
+2021-04-18 21:59:42,038 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: defer
+2021-04-18 21:59:42,038 INFO    HandlerThread:17063 [handler.py:handle_request_defer():134] handle defer: 3
+2021-04-18 21:59:42,039 DEBUG   SenderThread:17063 [sender.py:send():160] send: summary
+2021-04-18 21:59:42,039 INFO    SenderThread:17063 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2021-04-18 21:59:42,039 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:42,039 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: defer
+2021-04-18 21:59:42,039 INFO    SenderThread:17063 [sender.py:send_request_defer():255] handle sender defer: 3
+2021-04-18 21:59:42,039 INFO    SenderThread:17063 [sender.py:send_request_defer():291] send defer: 4
+2021-04-18 21:59:42,039 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: defer
+2021-04-18 21:59:42,039 INFO    HandlerThread:17063 [handler.py:handle_request_defer():134] handle defer: 4
+2021-04-18 21:59:42,040 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:42,040 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: defer
+2021-04-18 21:59:42,040 INFO    SenderThread:17063 [sender.py:send_request_defer():255] handle sender defer: 4
+2021-04-18 21:59:42,098 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: poll_exit
+2021-04-18 21:59:42,135 WARNING MainThread:17063 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2021-04-18 21:59:42,367 INFO    SenderThread:17063 [sender.py:send_request_defer():291] send defer: 5
+2021-04-18 21:59:42,367 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:42,367 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: poll_exit
+2021-04-18 21:59:42,370 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: defer
+2021-04-18 21:59:42,372 INFO    HandlerThread:17063 [handler.py:handle_request_defer():134] handle defer: 5
+2021-04-18 21:59:42,372 DEBUG   SenderThread:17063 [sender.py:send():160] send: request
+2021-04-18 21:59:42,372 DEBUG   SenderThread:17063 [sender.py:send_request():169] send_request: defer
+2021-04-18 21:59:42,373 INFO    SenderThread:17063 [sender.py:send_request_defer():255] handle sender defer: 5
+2021-04-18 21:59:42,375 DEBUG   HandlerThread:17063 [handler.py:handle_request():120] handle_request: shutdown
+2021-04-18 21:59:42,376 INFO    SenderThread:17063 [sender.py:send_request_defer():291] send defer: 6
+2021-04-18 21:59:42,376 INFO    HandlerThread:17063 [handler.py:finish():624] shutting down handler
+2021-04-18 21:59:42,376 INFO    SenderThread:17063 [sender.py:finish():884] shutting down sender
+2021-04-18 21:59:43,039 INFO    WriterThread:17063 [datastore.py:close():258] close: /home/antoniopioricciardi/PycharmProjects/simpledrawer/wandb/run-20210418_215935-452hyjzq/run-452hyjzq.wandb
+2021-04-18 21:59:43,728 INFO    MainThread:17063 [internal.py:handle_exit():78] Internal process exited
