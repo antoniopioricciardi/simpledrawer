@@ -17,7 +17,7 @@ TRAINING = True  # False if we want to skip training
 TESTING = False  # True if we want to test
 
 tests_todo = ['ddqn_00_start_fixed_line', 'ddqn_random_start_fixed_line_pos', 'ddqn_00_start_random_line_pos', 'ddqn_random_start_random_line_pos']
-TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
+TEST_N = 0  # 0 to 3 to choose the environment property from those in the list above
 
 global test_name
 test_name = tests_todo[TEST_N]
@@ -43,16 +43,16 @@ sweep_config = {
         #     'values': [2, 5, 10]
         # },
         'batch_size': {
-            'values': [32, 64]
+            'values': [64]#[32, 64]
         },
         'learning_rate': {
             'values': [1e-3]
         },
         'gamma': {
-            'values': [0.6, 0.9]
+            'values': [0.9] #[0.6, 0.9]
         },
         'fc_layer_size': {
-            'values': [64,128,256, 512]
+            'values': [512]#[64,128,256, 512]
         },
         # 'optimizer': {
         #     'values': ['adam', 'sgd']
@@ -60,7 +60,7 @@ sweep_config = {
     }
 }
 
-sweep_id = wandb.sweep(sweep_config, project="simpledrawer_newreward-" + test_name)
+sweep_id = wandb.sweep(sweep_config, project="simpledrawer_test-" + test_name)
 
 '''
 filepath = os.path.join('shapes', 'line_1.png')
@@ -237,6 +237,7 @@ def test_new(agent, name, n_test_games, n_test_games_to_avg):
             starting_state = env.starting_pos
             starts_per_states[starting_state] += 1
             while not done:
+                env.mostra()
                 # print(agent.epsilon)
                 if test_game_idx % 50 == 0:
                     env.render()
@@ -368,7 +369,7 @@ def train_test():
     }
 
     """NON HYPERPARAMETERS"""
-    training = True
+    training = False
     testing = True
     # TODO: move them out of here
     checkpoint_dir = 'models'
