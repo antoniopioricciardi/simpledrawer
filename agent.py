@@ -45,6 +45,12 @@ class Agent:
             action = torch.argmax(actions).item()
         return action
 
+    def choose_action_eval(self, state):
+        state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
+        actions = self.eval_Q.forward(state)
+        action = torch.argmax(actions).item()
+        return action
+
     def store_transition(self, state, action, reward, next_state, done):
         self.memory.store_transition(state, action, reward, next_state, done)
 

@@ -117,7 +117,7 @@ def train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_gam
         while not done:
             n_steps += 1
             if game_n % 200 == 0:
-                env.render()
+                env.print_debug()
             n_steps += 1
             source, canvas, pointer = state
             state = np.append(source.reshape(-1), canvas.reshape(-1))
@@ -133,6 +133,7 @@ def train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_gam
             flat_shape_ = np.append(source.reshape(-1), canvas.reshape(-1))
             flat_shape_ = np.append(flat_shape_, pointer)
 
+            # TODO: Try not casting done to int
             agent.store_transition(state, action, reward, flat_shape_, int(done))
             agent.learn()
 
@@ -141,20 +142,12 @@ def train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_gam
             score += reward
             score = round(score, 2)
 
+        # Code below runs after each game
         if game_n % 200 == 0:
             print(score)
         scores.append(score)
         epsilon_history.append(agent.epsilon)
 
-        # if wins / 50 >= best_win_pct and agent.epsilon == 0:
-        # best_win_pct = wins / 50
-
-        # if score >= best_score and agent.epsilon == 0:
-        #     best_score = score
-        #     agent.save_models()
-
-        # if i > 900:
-        #    print(score)
         if game_n % n_train_games_to_avg == 0:
             print('############################\ntraining recap after', n_steps, 'steps.\n', '50 games avg SCORE:', np.mean(scores[-n_train_games_to_avg:]),
                   'eps:', agent.epsilon, '50 games win pct', wins / n_train_games_to_avg, '\n##################\n')
@@ -169,7 +162,8 @@ def train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_gam
         if game_n % eval_games_freq == 0:
             print('########### TESTING ###########')
             with torch.no_grad():
-                agent.eval_Q.eval()
+                agent.is_training(False)
+                # agent.eval_Q.eval()
                 eval_wins = 0
                 eval_scores = []
                 for test_game_idx in range(n_eval_games):
@@ -179,7 +173,7 @@ def train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_gam
                     while not done:
                         # print(agent.epsilon)
                         if test_game_idx % 10 == 0:
-                            env.render()
+                            env.print_debug()
                         source, canvas, pointer = state
                         state = np.append(source.reshape(-1), canvas.reshape(-1))
                         state = np.append(state, pointer)
@@ -209,7 +203,7 @@ def train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_gam
                 plot_scores_testing(eval_scores, n_eval_games, 'plots/' + name + '_eval.png')
 
 
-def test_new(agent, name, n_test_games, n_test_games_to_avg):
+def test(agent, name, n_test_games, n_test_games_to_avg):
     # n_test_games = config.n_test_games
     # n_test_games_to_avg = config.n_test_games_to_avg
 
@@ -237,10 +231,10 @@ def test_new(agent, name, n_test_games, n_test_games_to_avg):
             starting_state = env.starting_pos
             starts_per_states[starting_state] += 1
             while not done:
-                env.mostra()
+                env.render()
                 # print(agent.epsilon)
                 if test_game_idx % 50 == 0:
-                    env.render()
+                    env.print_debug()
                 source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))
                 state = np.append(state, pointer)
@@ -310,7 +304,7 @@ def test_nosweeps(agent, name, n_test_games, n_test_games_to_avg):
             while not done:
                 # print(agent.epsilon)
                 if test_game_idx % 50 == 0:
-                    env.render()
+                    env.print_debug()
                 source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))
                 state = np.append(state, pointer)
@@ -414,6 +408,8 @@ def train_test():
         os.mkdir(os.path.join('plots', test_name))
     name = test_name + '/lr' + str(lr) + '_gamma' + str(gamma) + '_epsilon' + str(epsilon) + '_batch_size' + str(
         batch_size) + '_fc_size' + str(n_hidden)
+    print(name)
+    exit(3)
     agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
                   batch_size, name, checkpoint_dir)
 
@@ -421,7 +417,7 @@ def train_test():
         train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_games)
     if testing:
         agent.epsilon = 0.0
-        test_new(agent, name, n_test_games, n_test_games_to_avg)
+        test(agent, name, n_test_games, n_test_games_to_avg)
 
 
 

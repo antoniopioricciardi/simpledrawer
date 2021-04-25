@@ -3,6 +3,7 @@ import numpy as np
 
 class ReplayMemory:
     def __init__(self, size, n_input, n_actions):
+        # TODO: states and actions as int16
         self.size = size
         self.n_input = n_input
         self.n_actions = n_actions
