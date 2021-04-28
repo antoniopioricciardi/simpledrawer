@@ -160,8 +160,6 @@ class WandbTrainer:
             # TODO: un def test diverso da quello di sotto gia fatto
             # TODO: Creare choose action per testing
             if game_n % eval_games_freq == 0:
-                continue
-                print('########### TESTING ###########')
                 with torch.no_grad():
                     agent.is_training(False)
                     # agent.eval_Q.eval()
