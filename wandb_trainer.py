@@ -17,40 +17,52 @@ class WandbTrainer:
         self.training = training
         self.testing = testing
 
-        self.sweep_id = wandb.sweep(sweep_config, project=sweeps_project_name + test_name) #project="simpledrawer_test-"
+        self.sweep_id = wandb.sweep(sweep_config, project=sweeps_project_name + '-' + test_name) #project="simpledrawer_test-"
 
-        if not os.path.exists(os.path.join('models', test_name)):
-            os.mkdir(os.path.join('models', test_name))
-        if not os.path.exists(os.path.join('plots', test_name)):
-            os.mkdir(os.path.join('plots', test_name))
+        if not os.path.exists('tests'):
+            os.mkdir('tests')
+        tests_sweepsproj_name = os.path.join('tests', sweeps_project_name)
+        if not os.path.exists(tests_sweepsproj_name):
+            os.mkdir(tests_sweepsproj_name)
+        self.models_path = os.path.join(tests_sweepsproj_name, 'models')
+        if not os.path.exists(self.models_path):
+            os.mkdir(self.models_path)
+        if not os.path.exists(os.path.join(self.models_path, test_name)):
+            os.mkdir(os.path.join(self.models_path, test_name))
+
+        self.plots_path = os.path.join(tests_sweepsproj_name, 'plots')
+        if not os.path.exists(self.plots_path):
+            os.mkdir(self.plots_path)
+        if not os.path.exists(os.path.join(self.plots_path, test_name)):
+            os.mkdir(os.path.join(self.plots_path, test_name))
 
     def do_sweeps(self):
         wandb.agent(self.sweep_id, self.__train_test)
 
     def __train_test(self):
-        config_defaults = {
-            'replace': 1000,
-            'learning_rate': 1e-3,
-            'gamma': 0.6,
-            'epsilon': 0.8,
-            'epsilon_min': 0.0,
-            'epsilon_dec': 1e-5,
-            'mem_size': 50000,
-            'batch_size': 64,
-            'optimizer': 'adam',
-            'fc_layer_size': 128,
-            'max_steps': 400000  # 350000,
-            # 'n_eval_games': 100,
-            # 'eval_games_freq': 200,
-            # 'n_test_games': 1000,
-            # 'n_test_games_to_avg': 50,
-        }
+        # config_defaults = {
+        #     'replace': 1000,
+        #     'learning_rate': 1e-3,
+        #     'gamma': 0.6,
+        #     'epsilon': 0.8,
+        #     'epsilon_min': 0.0,
+        #     'epsilon_dec': 1e-5,
+        #     'mem_size': 50000,
+        #     'batch_size': 64,
+        #     'optimizer': 'adam',
+        #     'fc_layer_size': 128,
+        #     'max_steps': 400000  # 350000,
+        #     # 'n_eval_games': 100,
+        #     # 'eval_games_freq': 200,
+        #     # 'n_test_games': 1000,
+        #     # 'n_test_games_to_avg': 50,
+        # }
 
         """NON HYPERPARAMETERS"""
         #training = False
         #testing = True
         # TODO: move them out of here
-        checkpoint_dir = 'models'
+        checkpoint_dir = self.models_path# 'models'
         n_train_games_to_avg = 50
         n_eval_games = 100
         eval_games_freq = 200
@@ -58,7 +70,7 @@ class WandbTrainer:
         n_test_games_to_avg = 50
 
         # Initialize a new wandb run
-        wandb.init(config=config_defaults)
+        run = wandb.init(config=self.config_defaults)
         # Config is a variable that holds and saves hyperparameters and inputs
         config = wandb.config
 
@@ -85,8 +97,10 @@ class WandbTrainer:
         if self.training:
             self.train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_games)
         if self.testing:
-            agent.epsilon = 0.2
+            agent.epsilon = 0.0
             self.test(agent, name, n_test_games, n_test_games_to_avg)
+
+        run.finish()
 
     def train(self, config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_games):
         scores = []
@@ -110,10 +124,10 @@ class WandbTrainer:
             state = self.env.reset()
             while not done:
                 n_steps += 1
-                if game_n % 200 == 0:
-                    self.env.print_debug()
-                if game_n % 1000 == 0:
-                    self.env.render()
+                #if game_n % 200 == 0:
+                #    self.env.print_debug()
+                #if game_n % 1000 == 0:
+                #    self.env.render()
                 n_steps += 1
                 source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))
@@ -127,7 +141,7 @@ class WandbTrainer:
                         wins += 1
 
                 flat_shape_ = np.append(source.reshape(-1), canvas.reshape(-1))
-                flat_shape_ = np.append(flat_shape_, pointer)
+                flat_shape_ = np.append(flat_shape_, pointer_)
 
                 # TODO: Try not casting done to int
                 agent.store_transition(state, action, reward, flat_shape_, int(done))
@@ -151,7 +165,7 @@ class WandbTrainer:
                       'games.\n', '50 games avg SCORE:', np.mean(scores[-n_train_games_to_avg:]),
                       'eps:', agent.epsilon, '50 games win pct', wins / n_train_games_to_avg,
                       '\n##################\n')
-                plot_scores(scores, epsilon_history, n_train_games_to_avg, 'plots/' + name + '.png')
+                plot_scores(scores, epsilon_history, n_train_games_to_avg, os.path.join(self.plots_path, name) + '.png')#  'plots/' + name + '.png')
                 wandb.log({"50 games avg reward": np.mean(scores[-n_train_games_to_avg:])})
                 wandb.log({"50 games n wins": wins / n_train_games_to_avg * 100})
                 wandb.log({"epsilon": agent.epsilon})
@@ -201,7 +215,7 @@ class WandbTrainer:
                           'win pct (%)', (eval_wins / n_eval_games) * 100, '\n##################\n')
                     wandb.log({str(n_eval_games) + " eval games, win pct (%)": (eval_wins / n_eval_games) * 100})
                     wandb.log({str(n_eval_games) + " eval games, avg rewards": np.mean(eval_scores)})
-                    plot_scores_testing(eval_scores, n_eval_games, 'plots/' + name + '_eval.png')
+                    plot_scores_testing(eval_scores, n_eval_games, os.path.join(self.plots_path, name) + '_eval.png')#'plots/' + name + '_eval.png')
 
     def test(self, agent, name, n_test_games, n_test_games_to_avg):
         # n_test_games = config.n_test_games
@@ -238,9 +252,11 @@ class WandbTrainer:
                     source, canvas, pointer = state
                     state = np.append(source.reshape(-1), canvas.reshape(-1))
                     state = np.append(state, pointer)
-                    action = agent.choose_action(state)
+                    # action = agent.choose_action(state)
+                    action, act_scores = agent.choose_action_debug(state)
                     # action = random.randint(0,4)
                     state_, reward, done = self.env.step(action)
+                    print(action, act_scores, reward)
                     source_, canvas_, pointer_ = state_
                     state = state_
 
@@ -265,7 +281,7 @@ class WandbTrainer:
             wandb.log({str(n_test_games) + " test games, avg score": np.mean(test_scores[n_test_games_to_avg:])})
             wandb.log({str(n_test_games) + " test games, win pct": test_wins / n_test_games * 100})
 
-            plot_scores_testing(test_scores, n_test_games_to_avg, 'plots/' + name + '_test.png')
+            plot_scores_testing(test_scores, n_test_games_to_avg, os.path.join(self.plots_path, name) + '_test.png')  # 'plots/' + name + '_test.png')
 
             print('Starts per states')
             print(starts_per_states)

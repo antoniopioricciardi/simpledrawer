@@ -14,14 +14,16 @@ TEST_N = 1  # 0 to 3 to choose the environment property from those in the list a
 global test_name
 test_name = tests_todo[TEST_N]
 
+side_length = 10
+max_steps = 60
 if TEST_N == 0:
-    env = Environment(random_starting_pos=False, random_horizontal_line=False)
+    env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=False)
 elif TEST_N == 1:
-    env = Environment(random_starting_pos=True, random_horizontal_line=False)
+    env = Environment(side_length, max_steps, random_starting_pos=True, random_horizontal_line=False)
 elif TEST_N == 2:
-    env = Environment(random_starting_pos=False, random_horizontal_line=True)
+    env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=True)
 elif TEST_N == 3:
-    env = Environment(random_starting_pos=True, random_horizontal_line=True)
+    env = Environment(side_length, max_steps, random_starting_pos=True, random_horizontal_line=True)
 
 sweep_config = {
     'method': 'grid', #grid, random, bayesian
@@ -40,7 +42,7 @@ sweep_config = {
             'values': [1e-3]
         },
         'gamma': {
-            'values': [0.6] #[0.6, 0.9]
+            'values': [0.9] #[0.6, 0.9]
         },
         'fc_layer_size': {
             'values': [512]#[64,128,256, 512]
@@ -66,14 +68,14 @@ config_defaults = {
     'replace': 1000,
     'learning_rate': 1e-3,
     'gamma': 0.6,
-    'epsilon': 0.8,
+    'epsilon': 1,
     'epsilon_min': 0.0,
     'epsilon_dec': 1e-5,
     'mem_size': 50000,
     'batch_size': 64,
     'optimizer': 'adam',
     'fc_layer_size': 128,
-    'max_steps': 400000  # 350000,
+    'max_steps': 1000000 #350000,
     # 'n_eval_games': 100,
     # 'eval_games_freq': 200,
     # 'n_test_games': 1000,
@@ -81,7 +83,7 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name="simpledrawer_test-", env=env, test_name=test_name, training=True, testing=True, games_to_avg=50)
+    wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name="simpledrawer_10x10-", env=env, test_name=test_name, training=True, testing=False, games_to_avg=50)
     wdb_trainer.do_sweeps()
     # wandb.agent(sweep_id, train_test)
 

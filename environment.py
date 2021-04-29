@@ -7,8 +7,8 @@ from PIL import Image
 
 
 class Environment:
-    def __init__(self, random_starting_pos=False, random_horizontal_line=False):
-        self.length = 4
+    def __init__(self, side_length, max_steps, random_starting_pos=False, random_horizontal_line=False):
+        self.length = side_length
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length))
         self.canvas = np.zeros((self.length, self.length))
@@ -21,7 +21,7 @@ class Environment:
 
         self.max_state = (self.length ** 2) - 1
         self.num_states = 2 * (self.length ** 2) + 1
-        self.max_steps = 50
+        self.max_steps = max_steps
 
         self.num_actions = len(self.actions)
 
@@ -144,17 +144,17 @@ class Environment:
             self.row = self.current_state // self.length
             self.column = self.current_state % self.length
 
-        # simple start - working
+        # simple reward - working
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
         reward = -0.01
         if self.source_matrix[self.row][self.column] == 1:
-            reward = 0  # unless the agent is in a cell that must be colored
+            reward = 0.1  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 0.1  # if we colored the correct cell, get +1 reward
+                reward = 1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
 
@@ -165,7 +165,7 @@ class Environment:
 
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.source_matrix, self.canvas):
-            reward = 1
+            reward = 10
             self.done = True
         if self.step_count == self.max_steps:
             self.done = True
@@ -175,5 +175,38 @@ class Environment:
         if self.done:
             cv2.destroyAllWindows()
         return (self.source_matrix, self.canvas, self.current_state), reward, self.done
+
+
+        # # simple reward - working
+        # '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
+        # if we colored the correct cell, get +1 reward'''
+        # # reward = -1  # -1 per step
+        # reward = -0.01
+        # if self.source_matrix[self.row][self.column] == 1:
+        #     reward = 0  # unless the agent is in a cell that must be colored
+        #
+        # if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
+        #     if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
+        #         reward = 0.1  # if we colored the correct cell, get +1 reward
+        #     self.canvas[self.row][self.column] = 1
+        #     chosen_action_str = 'color cell'
+        #
+        # if self.show_debug_info:
+        #     print('chosen action:', chosen_action_str)
+        #     print('-----------')
+        #     self.show_debug_info = False
+        #
+        # # if all the correct cells are colored, the episode can end
+        # if np.array_equal(self.source_matrix, self.canvas):
+        #     reward = 1
+        #     self.done = True
+        # if self.step_count == self.max_steps:
+        #     self.done = True
+        #     # if np.sum(self.canvas[1] == 1) != self.length:
+        #     #    reward = -100
+        # self.step_count += 1
+        # if self.done:
+        #     cv2.destroyAllWindows()
+        # return (self.source_matrix, self.canvas, self.current_state), reward, self.done
 
 

@@ -45,6 +45,16 @@ class Agent:
             action = torch.argmax(actions).item()
         return action
 
+    def choose_action_debug(self, state):
+        if np.random.random() < self.epsilon:
+            action = np.random.choice(self.n_actions)
+        else:
+            # input_dims is a batch, therefore we need to create a batch for every single observation
+            state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
+            actions = self.eval_Q.forward(state)
+            action = torch.argmax(actions).item()
+        return action, actions
+
     def choose_action_eval(self, state):
         state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
         actions = self.eval_Q.forward(state)
