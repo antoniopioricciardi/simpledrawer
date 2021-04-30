@@ -3,6 +3,9 @@ import wandb
 from environment import Environment
 from wandb_trainer import WandbTrainer
 
+# TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
+
+
 wandb.login()
 
 sweep_config = {
@@ -22,7 +25,7 @@ sweep_config = {
             'values': [1e-3]
         },
         'gamma': {
-            'values': [0.9] #[0.6, 0.9]
+            'values': [0.6] #[0.6, 0.9]
             #'values': [0.6, 0.9, 0.99]
         },
         'fc_layer_size': {
@@ -70,7 +73,7 @@ if __name__ == '__main__':
                   'ddqn_random_start_random_line_pos', 'ddqn_start_on_line_random_line_pos']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
-        if TEST_N != 2:
+        if TEST_N != 4:
             continue
         # test_name = tests_todo[TEST_N]
         print('#######################\nTraining/Testing env:', test_name, '#######################\n')
@@ -83,8 +86,8 @@ if __name__ == '__main__':
         elif TEST_N == 3:
             env = Environment(side_length, max_steps, random_starting_pos=True, random_horizontal_line=True)
         elif TEST_N == 4:
-            env = Environment(side_length, max_steps, random_starting_pos=True, random_horizontal_line=True, start_on_line=True)
+            env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=True, start_on_line=True)
 
         wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name="simpledrawer_10x10", env=env,
-                                   test_name=test_name, training=False, testing=True, games_to_avg=50)
+                                   test_name=test_name, training=True, testing=True, games_to_avg=50)
         wdb_trainer.do_sweeps()
