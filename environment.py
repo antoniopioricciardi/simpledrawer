@@ -7,7 +7,7 @@ from PIL import Image
 
 
 class Environment:
-    def __init__(self, side_length, max_steps, random_starting_pos=False, random_horizontal_line=False):
+    def __init__(self, side_length, max_steps, random_starting_pos=False, random_horizontal_line=False, start_on_line=False):
         self.length = side_length
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length))
@@ -27,6 +27,9 @@ class Environment:
 
         self.random_starting_pos = random_starting_pos
         self.random_horizontal_line = random_horizontal_line
+        self.start_on_line=start_on_line
+        if self.start_on_line:
+            self.random_starting_pos = False
 
         self.show_debug_info = False
         self.color_action = False  # True if we colored in that step, False otherwise
@@ -37,20 +40,26 @@ class Environment:
         #     self.column = self.current_state % self.length
 
     def reset(self):
-        self.source_matrix = np.zeros((self.length, self.length))
-        if self.random_horizontal_line:
-            self.source_matrix[random.randint(0, self.length - 1)] = 1  # randomize the horizontal line to draw
-        else:
-            self.source_matrix[1] = 1  # draw a line in the second row
         self.canvas = np.zeros((self.length, self.length))
         self.current_state = 0
         self.row = 0
         self.column = 0
 
+        self.source_matrix = np.zeros((self.length, self.length))
+        if self.random_horizontal_line:
+            # randomize the horizontal line to draw
+            line_pos = random.randint(0, self.length - 1)
+            self.source_matrix[line_pos] = 1
+            # if it is required to start on the line, compute starting pos
+            if self.start_on_line:
+                self.current_state = self.length * line_pos
+        else:
+            self.source_matrix[1] = 1  # draw a line in the seconpd row
+
         if self.random_starting_pos:
             self.current_state = random.randint(0, self.max_state)
-            self.row = self.current_state // self.length
-            self.column = self.current_state % self.length
+        self.row = self.current_state // self.length
+        self.column = self.current_state % self.length
 
         self.step_count = 0
         self.done = False
@@ -100,11 +109,13 @@ class Environment:
         text2 = "Canvas"
         text_color_list = np.array([255, 0, 0])
         text_color = (int(text_color_list[0]), int(text_color_list[1]), int(text_color_list[2]))
-        img1 = cv2.putText(source_background.copy(), text1, (int(0.25 * width), 30), cv2.FONT_HERSHEY_COMPLEX, 1,
-                           text_color)
-        img2 = cv2.putText(canvas_background.copy(), text2, (int(0.25 * width), 30), cv2.FONT_HERSHEY_COMPLEX, 1,
-                           text_color)
+        #img1 = cv2.putText(source_background.copy(), text1, (int(0.25 * width), 30), cv2.FONT_HERSHEY_COMPLEX, 1,
+        #                   text_color)
+        #img2 = cv2.putText(canvas_background.copy(), text2, (int(0.25 * width), 30), cv2.FONT_HERSHEY_COMPLEX, 1,
+        #                   text_color)
 
+        img1 = source_background
+        img2 = canvas_background
         final = cv2.hconcat((img1, img2))
         # shape[1] is the width, it seems it needs to go first when resizing.
         final = cv2.resize(final, (final.shape[1] * 30, final.shape[0] * 30), interpolation=cv2.INTER_NEAREST)
@@ -143,6 +154,7 @@ class Environment:
             # obtain matrix coords for the drawer pointer
             self.row = self.current_state // self.length
             self.column = self.current_state % self.length
+            self.color_action = False
 
         # simple reward - working
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
@@ -157,6 +169,7 @@ class Environment:
                 reward = 1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
+            self.color_action = True
 
         if self.show_debug_info:
             print('chosen action:', chosen_action_str)
