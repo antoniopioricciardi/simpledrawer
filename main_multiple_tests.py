@@ -51,15 +51,15 @@ r.save('foo.png')
 config_defaults = {
     'replace': 1000,
     'learning_rate': 1e-3,
-    'gamma': 0.6,
-    'epsilon': 1,
+    'gamma': 0.9,
+    'epsilon': 0.6,
     'epsilon_min': 0.0,
     'epsilon_dec': 1e-5,
     'mem_size': 50000,
     'batch_size': 64,
     'optimizer': 'adam',
     'fc_layer_size': 128,
-    'max_steps': 1000000 #350000,
+    'max_steps': 400000 #350000,
     # 'n_eval_games': 100,
     # 'eval_games_freq': 200,
     # 'n_test_games': 1000,
@@ -67,13 +67,13 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    side_length = 10
-    max_steps = 60
+    side_length = 5
+    max_steps = 50
     tests_todo = ['ddqn_00_start_fixed_line', 'ddqn_random_start_fixed_line_pos', 'ddqn_00_start_random_line_pos',
                   'ddqn_random_start_random_line_pos', 'ddqn_start_on_line_random_line_pos']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
-        if TEST_N != 4:
+        if TEST_N != 2:
             continue
         # test_name = tests_todo[TEST_N]
         print('#######################\nTraining/Testing env:', test_name, '#######################\n')
@@ -88,6 +88,6 @@ if __name__ == '__main__':
         elif TEST_N == 4:
             env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=True, start_on_line=True)
 
-        wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name="simpledrawer_10x10", env=env,
+        wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name="simpledrawer_5x5_generalization", env=env,
                                    test_name=test_name, training=True, testing=True, games_to_avg=50)
         wdb_trainer.do_sweeps()

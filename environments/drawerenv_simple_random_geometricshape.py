@@ -1,12 +1,13 @@
-import os
-import random
-import pprint
-import numpy as np
+
 import cv2
+import random
+import numpy as np
+
 from PIL import Image
+from pprint import pprint
 
 
-class Environment:
+class SimpleRandomGeometricShapeEnv:
     def __init__(self, side_length, max_steps, random_starting_pos=False, random_horizontal_line=False, start_on_line=False):
         self.length = side_length
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
@@ -34,6 +35,9 @@ class Environment:
         self.show_debug_info = False
         self.color_action = False  # True if we colored in that step, False otherwise
         self.starting_pos = self.current_state
+
+        self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond]
+
         # if self.random_starting_pos:
         #     self.current_state = random.randint(0, self.max_state)
         #     self.row = self.current_state // self.length
@@ -46,23 +50,23 @@ class Environment:
         self.column = 0
 
         self.source_matrix = np.zeros((self.length, self.length))
-        if self.random_horizontal_line:
-            # randomize the horizontal line to draw
-            line_pos = random.randint(0, self.length - 1)
-            self.source_matrix[line_pos] = 1
-            # if it is required to start on the line, compute starting pos
-            random_interr = np.random.choice([3])
-            while random_interr in [3]:
-                random_interr = random.randint(0,self.length - 1)
-            self.source_matrix[line_pos][random_interr] = 0
-            if self.start_on_line:
-                self.current_state = self.length * line_pos
-        else:
-            self.source_matrix[1] = 1  # draw a line in the seconpd row
-
-
-        if self.random_starting_pos:
-            self.current_state = random.randint(0, self.max_state)
+        # self.__create_square()
+        # self.__create_circle()
+        #self.__create_triangle()
+        random_shape_n = random.randint(0, len(self.shapes_list) - 1)
+        self.shapes_list[random_shape_n]()
+        # if self.random_horizontal_line:
+        #     # randomize the horizontal line to draw
+        #     line_pos = random.randint(0, self.length - 1)
+        #     self.source_matrix[line_pos] = 1
+        #     # if it is required to start on the line, compute starting pos
+        #     if self.start_on_line:
+        #         self.current_state = self.length * line_pos
+        # else:
+        #     self.source_matrix[1] = 1  # draw a line in the seconpd row
+        #
+        # if self.random_starting_pos:
+        #     self.current_state = random.randint(0, self.max_state)
         self.row = self.current_state // self.length
         self.column = self.current_state % self.length
 
@@ -77,7 +81,7 @@ class Environment:
         self.show_debug_info = True
 
     def render(self):
-        # INEFFICIENT. Every time we recreate a new matrix instead of modifying the old one. To be fixed.
+        # TODO: INEFFICIENT. Every time we recreate a new matrix instead of modifying the old one. To be fixed.
         # MOREOVER: We only change the source matrix when reset is called.
         # source matrix to draw, initialized with black pixels
         source = np.zeros((self.length, self.length, 3), dtype=np.uint8)
@@ -172,8 +176,6 @@ class Environment:
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
-            else:  # maybe way too punishing
-                reward = -10
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
             self.color_action = True
@@ -229,4 +231,56 @@ class Environment:
         #     cv2.destroyAllWindows()
         # return (self.source_matrix, self.canvas, self.current_state), reward, self.done
 
+    def __create_diamond(self):
+        mid = self.length // 2
+        for x in range(mid):
+            self.source_matrix[x][mid + x] = 1
+            self.source_matrix[x][mid - x] = 1
+            self.source_matrix[self.length - 1 - x][mid + x] = 1
+            self.source_matrix[self.length - 1 - x][mid - x] = 1
+        if self.length % 2 != 0:
+            self.source_matrix[mid][0] = 1
+            self.source_matrix[mid][self.length - 1] = 1
 
+    def __create_triangle(self):
+        # TODO: support for multi-dimensional shapes and maybe fix a little
+        # TODO: Drawing is a little bit skewed, fix it
+        b = self.length
+        h = self.length
+        mid = round((self.length-1)/2)
+        self.source_matrix[h-1] = 1
+        for y in range(self.length):
+            if y == self.length - 1:
+                continue
+            val = (b - y) // 2
+            print(val)
+            val = mid if val < 0 else val
+            self.source_matrix[y][h - val] = 1
+            self.source_matrix[y][0 + val] = 1
+            # for x in range(self.length):
+
+    def __create_circle(self):
+        # TODO: check that values for a,b,r and conditions to draw are always correct
+        # a, b are the coordinates of the center
+        r = round(self.length/2)
+        a = b = self.length//2
+        EPSILON = 2.2
+        for y in range(self.length):
+            for x in range(self.length):
+                print('x:',x,'- y:',y, '----',(x-a)**2 + (y-b)**2 - r**2)
+                if abs((x-a)**2 + (y-b)**2 - r**2) <= round(self.length/2):
+                    self.source_matrix[x][y] = 1
+
+    def __create_square(self):
+        # TODO: support for different shapes and shape size
+        self.source_matrix[:,0] = 1
+        self.source_matrix[:,self.length-1] = 1
+        self.source_matrix[0,:] = 1
+        self.source_matrix[self.length-1, :] = 1
+        self.current_state = random.randint(0, self.length-1)
+
+
+env = SimpleRandomGeometricShapeEnv(9, 4)
+env.reset()
+env.render()
+env.step(2)
