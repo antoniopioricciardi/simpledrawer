@@ -128,6 +128,7 @@ class WandbTrainer:
                 #    self.env.print_debug()
                 #if game_n % 1000 == 0:
                 #    self.env.render()
+                self.env.render()
                 n_steps += 1
                 source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))

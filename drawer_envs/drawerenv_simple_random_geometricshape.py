@@ -8,7 +8,13 @@ from pprint import pprint
 
 
 class SimpleRandomGeometricShapeEnv:
-    def __init__(self, side_length, max_steps, random_starting_pos=False, random_horizontal_line=False, start_on_line=False):
+    def __init__(self, side_length : int, max_steps, random_starting_pos=False):# , start_on_line=False):
+        """
+        
+        :param side_length: source and canvas matrices side lengths. An odd size is preferable  
+        :param max_steps: max number of steps for the simulation to run
+        :param random_starting_pos: whether the agent must start in a random position
+        """
         self.length = side_length
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length))
@@ -27,21 +33,15 @@ class SimpleRandomGeometricShapeEnv:
         self.num_actions = len(self.actions)
 
         self.random_starting_pos = random_starting_pos
-        self.random_horizontal_line = random_horizontal_line
-        self.start_on_line=start_on_line
-        if self.start_on_line:
-            self.random_starting_pos = False
+        # self.start_on_line=start_on_line
+        # if self.start_on_line:
+        #     self.random_starting_pos = False
 
         self.show_debug_info = False
         self.color_action = False  # True if we colored in that step, False otherwise
         self.starting_pos = self.current_state
 
         self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond]
-
-        # if self.random_starting_pos:
-        #     self.current_state = random.randint(0, self.max_state)
-        #     self.row = self.current_state // self.length
-        #     self.column = self.current_state % self.length
 
     def reset(self):
         self.canvas = np.zeros((self.length, self.length))
@@ -263,9 +263,3 @@ class SimpleRandomGeometricShapeEnv:
         self.source_matrix[0,:] = 1
         self.source_matrix[self.length-1, :] = 1
         self.current_state = random.randint(0, self.length-1)
-
-
-env = SimpleRandomGeometricShapeEnv(9, 4)
-env.reset()
-env.render()
-env.step(2)
