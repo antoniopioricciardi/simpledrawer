@@ -50,23 +50,8 @@ class SimpleRandomGeometricShapeEnv:
         self.column = 0
 
         self.source_matrix = np.zeros((self.length, self.length))
-        # self.__create_square()
-        # self.__create_circle()
-        #self.__create_triangle()
         random_shape_n = random.randint(0, len(self.shapes_list) - 1)
-        self.shapes_list[random_shape_n]()
-        # if self.random_horizontal_line:
-        #     # randomize the horizontal line to draw
-        #     line_pos = random.randint(0, self.length - 1)
-        #     self.source_matrix[line_pos] = 1
-        #     # if it is required to start on the line, compute starting pos
-        #     if self.start_on_line:
-        #         self.current_state = self.length * line_pos
-        # else:
-        #     self.source_matrix[1] = 1  # draw a line in the seconpd row
-        #
-        # if self.random_starting_pos:
-        #     self.current_state = random.randint(0, self.max_state)
+        self.shapes_list[random_shape_n]()  # call the function to create a random shape
         self.row = self.current_state // self.length
         self.column = self.current_state % self.length
 
