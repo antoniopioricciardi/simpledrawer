@@ -122,9 +122,9 @@ class SimpleRandomGeometricShapeEnv:
         chosen_action_str = ''
         if self.show_debug_info:
             print('source matrix:')
-            pprint.pprint(self.source_matrix)
+            pprint(self.source_matrix)
             print('canvas:')
-            pprint.pprint(self.canvas)
+            pprint(self.canvas)
             print('Agent position:', self.current_state)
 
         if action == 0:  # down
@@ -154,16 +154,15 @@ class SimpleRandomGeometricShapeEnv:
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
-        reward = -0.01
+        reward = -0.001
         if self.source_matrix[self.row][self.column] == 1:
-            reward = 0.1  # unless the agent is in a cell that must be colored
+            reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 1  # if we colored the correct cell, get +1 reward
+                reward = 0.1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
-            self.color_action = True
 
         if self.show_debug_info:
             print('chosen action:', chosen_action_str)
@@ -172,7 +171,7 @@ class SimpleRandomGeometricShapeEnv:
 
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.source_matrix, self.canvas):
-            reward = 10
+            reward = 100
             self.done = True
         if self.step_count == self.max_steps:
             self.done = True
@@ -182,7 +181,6 @@ class SimpleRandomGeometricShapeEnv:
         if self.done:
             cv2.destroyAllWindows()
         return (self.source_matrix, self.canvas, self.current_state), reward, self.done
-
 
         # # simple reward - working
         # '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
@@ -238,7 +236,6 @@ class SimpleRandomGeometricShapeEnv:
             if y == self.length - 1:
                 continue
             val = (b - y) // 2
-            print(val)
             val = mid if val < 0 else val
             self.source_matrix[y][h - val] = 1
             self.source_matrix[y][0 + val] = 1
@@ -252,7 +249,6 @@ class SimpleRandomGeometricShapeEnv:
         EPSILON = 2.2
         for y in range(self.length):
             for x in range(self.length):
-                print('x:',x,'- y:',y, '----',(x-a)**2 + (y-b)**2 - r**2)
                 if abs((x-a)**2 + (y-b)**2 - r**2) <= round(self.length/2):
                     self.source_matrix[x][y] = 1
 
@@ -262,4 +258,4 @@ class SimpleRandomGeometricShapeEnv:
         self.source_matrix[:,self.length-1] = 1
         self.source_matrix[0,:] = 1
         self.source_matrix[self.length-1, :] = 1
-        self.current_state = random.randint(0, self.length-1)
+        # self.current_state = random.randint(0, self.length-1)
