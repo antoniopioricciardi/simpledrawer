@@ -72,7 +72,7 @@ config_defaults = {
 if __name__ == '__main__':
     side_length = 5
     max_steps = 50
-    sweeps_project_name = 'simpledrawerCIRCLE_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    sweeps_project_name = 'simpledrawerNONEPISODIC_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
