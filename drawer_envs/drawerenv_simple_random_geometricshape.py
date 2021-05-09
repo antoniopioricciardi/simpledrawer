@@ -50,7 +50,8 @@ class SimpleRandomGeometricShapeEnv:
         self.column = 0
 
         self.source_matrix = np.zeros((self.length, self.length))
-        random_shape_n = random.randint(0, len(self.shapes_list) - 1)
+        # random_shape_n = random.randint(0, len(self.shapes_list) - 1)
+        random_shape_n = 1
         self.shapes_list[random_shape_n]()  # call the function to create a random shape
         self.row = self.current_state // self.length
         self.column = self.current_state % self.length
@@ -155,8 +156,8 @@ class SimpleRandomGeometricShapeEnv:
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
         reward = -0.001
-        if self.source_matrix[self.row][self.column] == 1:
-            reward = 0  # unless the agent is in a cell that must be colored
+        #if self.source_matrix[self.row][self.column] == 1:
+            #reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
@@ -171,7 +172,7 @@ class SimpleRandomGeometricShapeEnv:
 
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.source_matrix, self.canvas):
-            reward = 100
+            reward = 10
             self.done = True
         if self.step_count == self.max_steps:
             self.done = True

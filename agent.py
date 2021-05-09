@@ -33,8 +33,8 @@ class Agent:
             self.eval_Q.eval()
 
     def decrement_epsilon(self):
-        if self.epsilon < 0.2:
-            self.epsilon_dec = 1e-6
+        #if self.epsilon < 0.2:
+        #    self.epsilon_dec = 1e-6
         self.epsilon = self.epsilon - self.epsilon_dec if self.epsilon > self.epsilon_min else self.epsilon_min
 
     def choose_action(self, state):
