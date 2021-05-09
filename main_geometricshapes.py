@@ -1,6 +1,7 @@
 import wandb
 
 from drawer_envs.drawerenv_simple_random_geometricshape import SimpleRandomGeometricShapeEnv
+from drawer_envs.drawerenv_random_geometricshape_nonepisodic import SimpleRandomGeometricNonEpisodicShapeEnv
 from wandb_trainer import WandbTrainer
 
 # TODO: Implement Pygame
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     for TEST_N, test_name in enumerate(tests_todo):
         # test_name = tests_todo[TEST_N]
         print('#######################\nTraining/Testing env:', test_name, '\n#######################\n')
-        env = SimpleRandomGeometricShapeEnv(side_length, max_steps, random_starting_pos=False)
+        env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
         # if TEST_N == 0:
         #     env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=False)
         # elif TEST_N == 1:

@@ -7,7 +7,7 @@ from PIL import Image
 from pprint import pprint
 
 
-class SimpleRandomGeometricShapeEnv:
+class SimpleRandomGeometricNonEpisodicShapeEnv:
     def __init__(self, side_length : int, max_steps, random_starting_pos=False):# , start_on_line=False):
         """
         
