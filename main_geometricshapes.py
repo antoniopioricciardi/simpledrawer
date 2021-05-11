@@ -21,19 +21,19 @@ sweep_config = {
         #     'values': [2, 5, 10]
         # },
         'batch_size': {
-            'values': [32, 64]
-            # 'values': [32]
+            #'values': [32, 64]
+            'values': [32]
         },
         'learning_rate': {
             'values': [1e-3]
         },
         'gamma': {
-            # 'values': [0.6] #[0.6, 0.9]
-            'values': [0.6, 0.9, 0.99]
+            'values': [0.6, 0.9, 0.99]#[0.6, 0.7, 0.9]
+            #'values': [0.6] #[0.6, 0.9]
         },
         'fc_layer_size': {
-            'values': [64,128, 512]
-            #'values': [512]
+            #'values': [64,128, 512]
+            'values': [512]
         },
         # 'optimizer': {
         #     'values': ['adam', 'sgd']
@@ -73,13 +73,14 @@ config_defaults = {
 if __name__ == '__main__':
     side_length = 5
     max_steps = 50
-    sweeps_project_name = 'simpledrawerNONEPISODIC_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    sweeps_project_name = 'simpledrawerRANDOMSHAPE_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
         # test_name = tests_todo[TEST_N]
         print('#######################\nTraining/Testing env:', test_name, '\n#######################\n')
-        env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+        # env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+        env = SimpleRandomGeometricShapeEnv(side_length, max_steps, random_starting_pos=False)
         # if TEST_N == 0:
         #     env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=False)
         # elif TEST_N == 1:

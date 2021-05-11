@@ -161,7 +161,7 @@ class SimpleRandomGeometricShapeEnv:
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 0.1  # if we colored the correct cell, get +1 reward
+                reward = 0.01  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
 
@@ -172,7 +172,7 @@ class SimpleRandomGeometricShapeEnv:
 
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.source_matrix, self.canvas):
-            reward = 1
+            reward = 10
             self.done = True
         if self.step_count == self.max_steps:
             self.done = True
@@ -183,6 +183,37 @@ class SimpleRandomGeometricShapeEnv:
             cv2.destroyAllWindows()
         return (self.source_matrix, self.canvas, self.current_state), reward, self.done
 
+    # # simple reward - working
+    # '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
+    # if we colored the correct cell, get +1 reward'''
+    # # reward = -1  # -1 per step
+    # reward = -0.01
+    # if self.source_matrix[self.row][self.column] == 1:
+    #     reward = 0  # unless the agent is in a cell that must be colored
+    #
+    # if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
+    #     if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
+    #         reward = 0.1  # if we colored the correct cell, get +1 reward
+    #     self.canvas[self.row][self.column] = 1
+    #     chosen_action_str = 'color cell'
+    #
+    # if self.show_debug_info:
+    #     print('chosen action:', chosen_action_str)
+    #     print('-----------')
+    #     self.show_debug_info = False
+    #
+    # # if all the correct cells are colored, the episode can end
+    # if np.array_equal(self.source_matrix, self.canvas):
+    #     reward = 1
+    #     self.done = True
+    # if self.step_count == self.max_steps:
+    #     self.done = True
+    #     # if np.sum(self.canvas[1] == 1) != self.length:
+    #     #    reward = -100
+    # self.step_count += 1
+    # if self.done:
+    #     cv2.destroyAllWindows()
+    # return (self.source_matrix, self.canvas, self.current_state), reward, self.done
 
     def __create_diamond(self):
         mid = self.length // 2

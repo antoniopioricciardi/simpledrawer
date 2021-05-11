@@ -130,25 +130,30 @@ class WandbTrainer:
                 #    self.env.render()
                 # self.env.render()
                 n_steps += 1
+                # TODO: shape_n not used, for now
+                # shape_n, source, canvas, pointer = state
                 source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))
                 state = np.append(state, pointer)
                 action = agent.choose_action(state)
                 # action = random.randint(0,4)
-                state_, reward, done = self.env.step(action)
-                source_, canvas_, pointer_ = state_
-                if done:
-                    if np.array_equal(source_, canvas_):
-                        wins += 1
+                state_next, reward, done = self.env.step(action)
+                # shape_n_next, source_next, canvas_next, pointer_next = state_next
+                source_next, canvas_next, pointer_next = state_next
+                # if done:
+                if np.array_equal(source_next, canvas_next):
+                #if reward == 100:
+                    print('win')
+                    wins += 1
 
-                flat_shape_ = np.append(source.reshape(-1), canvas.reshape(-1))
-                flat_shape_ = np.append(flat_shape_, pointer_)
+                flat_state_next = np.append(source_next.reshape(-1), canvas_next.reshape(-1))
+                flat_state_next = np.append(flat_state_next, pointer_next)
 
                 # TODO: Try not casting done to int
-                agent.store_transition(state, action, reward, flat_shape_, int(done))
+                agent.store_transition(state, action, reward, flat_state_next, int(done))
                 agent.learn()
 
-                state = state_
+                state = state_next
 
                 score += reward
                 score = round(score, 2)
@@ -188,22 +193,29 @@ class WandbTrainer:
                             # print(agent.epsilon)
                             # if test_game_idx % 10 == 0:
                             #    env.print_debug()
+                            # shape_n, source, canvas, pointer = state
                             source, canvas, pointer = state
                             state = np.append(source.reshape(-1), canvas.reshape(-1))
                             state = np.append(state, pointer)
                             action = agent.choose_action(state)
                             # action = random.randint(0,4)
-                            state_, reward, done = self.env.step(action)
-                            source_, canvas_, pointer_ = state_
+                            state_next, reward, done = self.env.step(action)
+                            # shape_n_next, source_next, canvas_next, pointer_next = state_next
+                            source_next, canvas_next, pointer_next = state_next
 
-                            state = state_
+                            state = state_next
 
                             eval_score += reward
                             eval_score = round(eval_score, 2)
+
+                            # if reward == 100:
+                            if np.array_equal(source_next, canvas_next):
+                                # TODO: pprint(source_, canvas_)
+                                eval_wins += 1
                         eval_scores.append(eval_score)
-                        if np.array_equal(source_, canvas_):
-                            # TODO: pprint(source_, canvas_)
-                            eval_wins += 1
+                        #if np.array_equal(source_, canvas_):
+                        #   # TODO: pprint(source_, canvas_)
+                        #    eval_wins += 1
 
                     # test_win_pct = (eval_wins/n_eval_games) * 100
                     if eval_wins >= eval_best_win_n and agent.epsilon == 0:
@@ -250,21 +262,23 @@ class WandbTrainer:
                     # print(agent.epsilon)
                     if test_game_idx % 50 == 0:
                         self.env.print_debug()
+                    # shape_n, source, canvas, pointer = state
                     source, canvas, pointer = state
                     state = np.append(source.reshape(-1), canvas.reshape(-1))
                     state = np.append(state, pointer)
                     # action = agent.choose_action(state)
                     action, act_scores = agent.choose_action_debug(state)
                     # action = random.randint(0,4)
-                    state_, reward, done = self.env.step(action)
+                    state_next, reward, done = self.env.step(action)
                     print(action, act_scores, reward)
-                    source_, canvas_, pointer_ = state_
-                    state = state_
+                    #shape_n_next, source_next, canvas_next, pointer_next = state_next
+                    source_next, canvas_next, pointer_next = state_next
+                    state = state_next
 
                     test_score += reward
                     test_score = round(test_score, 2)
                 test_scores.append(test_score)
-                if np.array_equal(source_, canvas_):
+                if np.array_equal(source_next, canvas_next):
                     test_wins += 1
                     game_result = 'won'
                     wins_per_states[starting_state] += 1

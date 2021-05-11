@@ -43,6 +43,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
 
         self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond]
         self.num_completed = 0
+        self.shape_n = 0
 
     def reset(self):
         self.canvas = np.zeros((self.length, self.length))
@@ -61,7 +62,9 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.color_action = False
         self.starting_pos = self.current_state
 
-        return self.source_matrix, self.canvas, self.current_state
+        self.shape_n = random_shape_n
+
+        return self.shape_n, self.source_matrix, self.canvas, self.current_state
 
     def print_debug(self):
         self.show_debug_info = True
@@ -155,13 +158,13 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
-        reward = -0.01
+        reward = -0.1
         if self.source_matrix[self.row][self.column] == 1:
             reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 0.1  # if we colored the correct cell, get +1 reward
+                reward = 1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
 
@@ -172,10 +175,10 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
 
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.source_matrix, self.canvas):
-            reward = 1
+            reward = 100
             self.reset()
             self.num_completed += 1
-            if self.num_completed == 10:
+            if self.num_completed == 50:
                 self.done = True
                 self.num_completed = 0
             # self.done = True
@@ -186,7 +189,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.step_count += 1
         if self.done:
             cv2.destroyAllWindows()
-        return (self.source_matrix, self.canvas, self.current_state), reward, self.done
+        return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
     def __create_diamond(self):
         mid = self.length // 2

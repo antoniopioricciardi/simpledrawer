@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from ddqn import DDQN
+from nnets.ddqn import DDQN
 from replaymemory import ReplayMemory
 
 class Agent:
