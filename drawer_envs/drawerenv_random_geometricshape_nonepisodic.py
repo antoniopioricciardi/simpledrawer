@@ -27,7 +27,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.done = False
 
         self.max_state = (self.length ** 2) - 1
-        self.num_states = 2 * (self.length ** 2) + 1
+        self.num_states = 2 * (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
         self.max_steps = max_steps
 
         self.num_actions = len(self.actions)
@@ -84,7 +84,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
 
         self.shape_n += 1
         self.shape_n = self.shape_n % len(self.shapes_list)
-        return self.shape_n, self.source_matrix, self.canvas, self.current_state
+        return self.shape_n, self.source_matrix, self.canvas, self.row, self.column # self.current_state
 
     def print_debug(self):
         self.show_debug_info = True
@@ -213,7 +213,8 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.step_count += 1
         if self.done:
             cv2.destroyAllWindows()
-        return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
+        return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done
+        # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
     def __create_diamond(self):
         mid = self.length // 2

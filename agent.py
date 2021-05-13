@@ -98,8 +98,15 @@ class Agent:
 
         next_actions = torch.argmax(q_eval, dim=1)
 
+        print(dones)
+        print('######')
+        print(q_next)
+        print('######')
         q_next[dones] = 0.0
+        print(q_next)
+        print('######')
         target_next_q_pred = q_next[indices, next_actions]
+
 
         q_target = rewards + self.gamma * target_next_q_pred
         # q_target = rewards + self.gamma * q_next[indices, next_actions]

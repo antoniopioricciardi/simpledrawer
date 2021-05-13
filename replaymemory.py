@@ -10,7 +10,7 @@ class ReplayMemory:
         self.mem_counter = 0
         self.state_memory = np.zeros((self.size, n_input), dtype=np.float32)  # float32 is sufficient
         self.new_state_memory = np.zeros((self.size, n_input), dtype=np.float32)
-        self.action_memory = np.zeros(self.size, dtype=np.int64)  # minor problem with int32, so now stick with this
+        self.action_memory = np.zeros(self.size, dtype=np.int32)
         self.reward_memory = np.zeros(self.size, dtype=np.float32)
         self.terminal_memory = np.zeros(self.size, dtype=bool)  # used as a mask to set everything to 0 for terminal states
 
@@ -35,7 +35,7 @@ class ReplayMemory:
     def sample_buffer(self, batch_size):
         max_mem = min(self.mem_counter, self.size)
         # max index of max_mem and shape of batch_size
-        batch = np.random.choice(max_mem, batch_size, replace=False)  # with replace=False sampled items are removed
+        batch = np.random.choice(max_mem, batch_size)# , replace=False)  # with replace=False sampled items are removed
 
         state_batch = self.state_memory[batch]
         action_batch = self.action_memory[batch]
