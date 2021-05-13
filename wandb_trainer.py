@@ -131,15 +131,15 @@ class WandbTrainer:
                 # self.env.render()
                 n_steps += 1
                 # TODO: shape_n not used, for now
-                # shape_n, source, canvas, pointer = state
-                source, canvas, pointer = state
+                shape_n, source, canvas, pointer = state
+                # source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))
                 state = np.append(state, pointer)
                 action = agent.choose_action(state)
                 # action = random.randint(0,4)
                 state_next, reward, done = self.env.step(action)
-                # shape_n_next, source_next, canvas_next, pointer_next = state_next
-                source_next, canvas_next, pointer_next = state_next
+                shape_n_next, source_next, canvas_next, pointer_next = state_next
+                # source_next, canvas_next, pointer_next = state_next
                 # if done:
                 if np.array_equal(source_next, canvas_next):
                 #if reward == 100:
@@ -182,6 +182,7 @@ class WandbTrainer:
             if game_n % eval_games_freq == 0:
                 with torch.no_grad():
                     agent.is_training(False)
+                    best_eval_score = -100
                     # agent.eval_Q.eval()
                     eval_wins = 0
                     eval_scores = []
@@ -193,15 +194,15 @@ class WandbTrainer:
                             # print(agent.epsilon)
                             # if test_game_idx % 10 == 0:
                             #    env.print_debug()
-                            # shape_n, source, canvas, pointer = state
-                            source, canvas, pointer = state
+                            shape_n, source, canvas, pointer = state
+                            # source, canvas, pointer = state
                             state = np.append(source.reshape(-1), canvas.reshape(-1))
                             state = np.append(state, pointer)
                             action = agent.choose_action(state)
                             # action = random.randint(0,4)
                             state_next, reward, done = self.env.step(action)
-                            # shape_n_next, source_next, canvas_next, pointer_next = state_next
-                            source_next, canvas_next, pointer_next = state_next
+                            shape_n_next, source_next, canvas_next, pointer_next = state_next
+                            # source_next, canvas_next, pointer_next = state_next
 
                             state = state_next
 
@@ -209,7 +210,7 @@ class WandbTrainer:
                             eval_score = round(eval_score, 2)
 
                             # if reward == 100:
-                            if np.array_equal(source_next, canvas_next):
+                            if np.array_equal(source_next, canvas_next) and agent.epsilon == 0:
                                 # TODO: pprint(source_, canvas_)
                                 eval_wins += 1
                         eval_scores.append(eval_score)
@@ -218,10 +219,13 @@ class WandbTrainer:
                         #    eval_wins += 1
 
                     # test_win_pct = (eval_wins/n_eval_games) * 100
-                    if eval_wins >= eval_best_win_n and agent.epsilon == 0:
-                        eval_best_win_n = eval_wins
-                        # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
+                    if np.mean(eval_scores) >= best_eval_score:
+                        best_eval_score = np.mean(eval_scores)
                         agent.save_models()
+                    # if eval_wins >= eval_best_win_n and agent.epsilon == 0:
+                    #     eval_best_win_n = eval_wins
+                    #     # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
+                    #     agent.save_models()
 
                     print('############################\nevaluation after', n_steps, 'iterations.\n', n_eval_games,
                           'games avg SCORE:', np.mean(eval_scores),
@@ -262,8 +266,8 @@ class WandbTrainer:
                     # print(agent.epsilon)
                     if test_game_idx % 50 == 0:
                         self.env.print_debug()
-                    # shape_n, source, canvas, pointer = state
-                    source, canvas, pointer = state
+                    shape_n, source, canvas, pointer = state
+                    # source, canvas, pointer = state
                     state = np.append(source.reshape(-1), canvas.reshape(-1))
                     state = np.append(state, pointer)
                     # action = agent.choose_action(state)
@@ -271,8 +275,8 @@ class WandbTrainer:
                     # action = random.randint(0,4)
                     state_next, reward, done = self.env.step(action)
                     print(action, act_scores, reward)
-                    #shape_n_next, source_next, canvas_next, pointer_next = state_next
-                    source_next, canvas_next, pointer_next = state_next
+                    shape_n_next, source_next, canvas_next, pointer_next = state_next
+                    # source_next, canvas_next, pointer_next = state_next
                     state = state_next
 
                     test_score += reward

@@ -45,6 +45,26 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.num_completed = 0
         self.shape_n = 0
 
+    # def reset(self):
+    #     self.canvas = np.zeros((self.length, self.length))
+    #     self.current_state = 0
+    #     self.row = 0
+    #     self.column = 0
+    #
+    #     self.source_matrix = np.zeros((self.length, self.length))
+    #     random_shape_n = random.randint(0, len(self.shapes_list) - 1)
+    #     self.shapes_list[random_shape_n]()  # call the function to create a random shape
+    #     self.row = self.current_state // self.length
+    #     self.column = self.current_state % self.length
+    #
+    #     self.step_count = 0
+    #     self.done = False
+    #     self.color_action = False
+    #     self.starting_pos = self.current_state
+    #
+    #     self.shape_n = random_shape_n
+    #     return self.shape_n, self.source_matrix, self.canvas, self.current_state
+
     def reset(self):
         self.canvas = np.zeros((self.length, self.length))
         self.current_state = 0
@@ -52,8 +72,8 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.column = 0
 
         self.source_matrix = np.zeros((self.length, self.length))
-        random_shape_n = random.randint(0, len(self.shapes_list) - 1)
-        self.shapes_list[random_shape_n]()  # call the function to create a random shape
+        # random_shape_n = random.randint(0, len(self.shapes_list) - 1)
+        self.shapes_list[self.shape_n]()  # call the function to create a random shape
         self.row = self.current_state // self.length
         self.column = self.current_state % self.length
 
@@ -62,8 +82,8 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.color_action = False
         self.starting_pos = self.current_state
 
-        self.shape_n = random_shape_n
-
+        self.shape_n += 1
+        self.shape_n = self.shape_n % len(self.shapes_list)
         return self.shape_n, self.source_matrix, self.canvas, self.current_state
 
     def print_debug(self):
@@ -158,13 +178,13 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
-        reward = -0.1
+        reward = -0.01
         if self.source_matrix[self.row][self.column] == 1:
             reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 1  # if we colored the correct cell, get +1 reward
+                reward = 0.1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
 
@@ -178,12 +198,16 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
             reward = 100
             self.reset()
             self.num_completed += 1
-            if self.num_completed == 50:
+            if self.shape_n == 0:
                 self.done = True
                 self.num_completed = 0
+            # if self.num_completed == 50:
+            #     self.done = True
+            #     self.num_completed = 0
             # self.done = True
-        if self.step_count == self.max_steps:
+        elif self.step_count == self.max_steps:
             self.done = True
+            self.shape_n = 0
             # if np.sum(self.canvas[1] == 1) != self.length:
             #    reward = -100
         self.step_count += 1
