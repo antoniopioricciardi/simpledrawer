@@ -28,12 +28,12 @@ sweep_config = {
             'values': [1e-3]
         },
         'gamma': {
-            'values': [0.4, 0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
-            #'values': [0.6] #[0.6, 0.9]
+            #'values': [0.4, 0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
+            'values': [ 0.6] #[0.6, 0.9]
         },
         'fc_layer_size': {
             #'values': [64,128, 512]
-            'values': [512]
+            'values': [1024]
         },
         # 'optimizer': {
         #     'values': ['adam', 'sgd']
@@ -70,6 +70,32 @@ config_defaults = {
     # 'n_test_games_to_avg': 50,
 }
 
+
+def train_skip_wandb():
+    env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+    replace = 1000
+    lr = 0.001
+    gamma = 0.6
+    epsilon = 1
+    epsilon_min = 0
+    epsilon_dec = 1e-5
+    mem_size = 1000000
+    batch_size = 32
+    # checkpoint_dir = config.checkpoint_dir
+
+    n_states = env.num_states
+    n_actions = env.num_actions
+    n_hidden = 128
+    name = test_name + '/lr' + str(lr) + '_gamma' + str(gamma) + '_epsilon' + str(
+        epsilon) + '_batch_size' + str(batch_size) + '_fc_size' + str(n_hidden)
+    agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+    batch_size, name, 'models/')
+
+    train(env, agent, name, n_train_games_to_avg=50, eval_games_freq=1000, n_eval_games=50)
+
+
+from temptrainer import train
+from agent import Agent
 if __name__ == '__main__':
     side_length = 5
     max_steps = 50
@@ -80,6 +106,7 @@ if __name__ == '__main__':
         # test_name = tests_todo[TEST_N]
         print('#######################\nTraining/Testing env:', test_name, '\n#######################\n')
         env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+        # train_skip_wandb()
         # env = SimpleRandomGeometricShapeEnv(side_length, max_steps, random_starting_pos=False)
         # if TEST_N == 0:
         #     env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=False)
@@ -93,5 +120,5 @@ if __name__ == '__main__':
         #     env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=True, start_on_line=True)
 
         wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name=sweeps_project_name,
-                                   env=env, test_name=test_name, training=True, testing=False, games_to_avg=50)
+                                   env=env, test_name=test_name, training=False, testing=True, games_to_avg=50)
         wdb_trainer.do_sweeps()

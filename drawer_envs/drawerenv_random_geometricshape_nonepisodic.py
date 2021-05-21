@@ -17,8 +17,8 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         """
         self.length = side_length
         self.actions = np.array([0,1,2,3,4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
-        self.source_matrix = np.zeros((self.length, self.length))
-        self.canvas = np.zeros((self.length, self.length))
+        self.source_matrix = np.zeros((self.length, self.length), dtype=np.float32)
+        self.canvas = np.zeros((self.length, self.length), dtype=np.float32)
         self.current_state = 0
         self.row = 0
         self.column = 0
@@ -84,7 +84,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
 
         self.shape_n += 1
         self.shape_n = self.shape_n % len(self.shapes_list)
-        return self.shape_n, self.source_matrix, self.canvas, self.row, self.column # self.current_state
+        return self.shape_n, self.source_matrix, self.canvas, (self.row, self.column) # self.current_state
 
     def print_debug(self):
         self.show_debug_info = True
@@ -143,6 +143,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
 
     # new_reward
     def step(self, action):
+        is_win = False
         chosen_action_str = ''
         if self.show_debug_info:
             print('source matrix:')
@@ -178,15 +179,16 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
-        reward = -0.01
+        reward = 0
         if self.source_matrix[self.row][self.column] == 1:
             reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 0.1  # if we colored the correct cell, get +1 reward
+                reward = 1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
+            self.color_action = True
 
         if self.show_debug_info:
             print('chosen action:', chosen_action_str)
@@ -195,12 +197,16 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
 
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.source_matrix, self.canvas):
-            reward = 100
-            self.reset()
-            self.num_completed += 1
             if self.shape_n == 0:
+                self.reset()
                 self.done = True
                 self.num_completed = 0
+                is_win = True
+            # reward = 100
+            else:
+                self.reset()
+                self.num_completed += 1
+
             # if self.num_completed == 50:
             #     self.done = True
             #     self.num_completed = 0
@@ -213,7 +219,7 @@ class SimpleRandomGeometricNonEpisodicShapeEnv:
         self.step_count += 1
         if self.done:
             cv2.destroyAllWindows()
-        return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done
+        return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
     def __create_diamond(self):

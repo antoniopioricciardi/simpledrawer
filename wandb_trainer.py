@@ -64,10 +64,10 @@ class WandbTrainer:
         # TODO: move them out of here
         checkpoint_dir = self.models_path# 'models'
         n_train_games_to_avg = 50
-        n_eval_games = 100
+        n_eval_games = 10
         eval_games_freq = 200
-        n_test_games = 1000
-        n_test_games_to_avg = 50
+        n_test_games = 1
+        n_test_games_to_avg = 1
 
         # Initialize a new wandb run
         run = wandb.init(config=self.config_defaults)
@@ -122,6 +122,7 @@ class WandbTrainer:
             done = False
             score = 0
             state = self.env.reset()
+            is_win = False
             while not done:
                 n_steps += 1
                 #if game_n % 200 == 0:
@@ -135,16 +136,17 @@ class WandbTrainer:
                 # source, canvas, pointer = state
                 state = np.append(source.reshape(-1), canvas.reshape(-1))
                 state = np.append(state, pointer)
+                state = np.array(state, dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
                 action = agent.choose_action(state)
                 # action = random.randint(0,4)
-                state_next, reward, done = self.env.step(action)
+                state_next, reward, done, is_win = self.env.step(action)
                 shape_n_next, source_next, canvas_next, pointer_next = state_next
                 # source_next, canvas_next, pointer_next = state_next
                 # if done:
-                if np.array_equal(source_next, canvas_next):
+                #if np.array_equal(source_next, canvas_next):
                 #if reward == 100:
-                    print('win')
-                    wins += 1
+                #    print('win')
+                #    wins += 1
 
                 flat_state_next = np.append(source_next.reshape(-1), canvas_next.reshape(-1))
                 flat_state_next = np.append(flat_state_next, pointer_next)
@@ -157,6 +159,9 @@ class WandbTrainer:
 
                 score += reward
                 score = round(score, 2)
+
+            if is_win:
+                wins += 1
 
             # Code below runs after each game
             if game_n % 200 == 0:
@@ -181,6 +186,7 @@ class WandbTrainer:
             # TODO: Creare choose action per testing
             if game_n % eval_games_freq == 0:
                 with torch.no_grad():
+                    is_win = False
                     agent.is_training(False)
                     best_eval_score = -100
                     # agent.eval_Q.eval()
@@ -198,34 +204,30 @@ class WandbTrainer:
                             # source, canvas, pointer = state
                             state = np.append(source.reshape(-1), canvas.reshape(-1))
                             state = np.append(state, pointer)
+                            state = np.array(state, dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
+
                             action = agent.choose_action(state)
                             # action = random.randint(0,4)
-                            state_next, reward, done = self.env.step(action)
+                            state_next, reward, done, is_win = self.env.step(action)
                             shape_n_next, source_next, canvas_next, pointer_next = state_next
-                            # source_next, canvas_next, pointer_next = state_next
 
                             state = state_next
 
                             eval_score += reward
                             eval_score = round(eval_score, 2)
 
-                            # if reward == 100:
-                            if np.array_equal(source_next, canvas_next) and agent.epsilon == 0:
-                                # TODO: pprint(source_, canvas_)
-                                eval_wins += 1
                         eval_scores.append(eval_score)
-                        #if np.array_equal(source_, canvas_):
-                        #   # TODO: pprint(source_, canvas_)
-                        #    eval_wins += 1
 
+                        if is_win:
+                            eval_wins += 1
                     # test_win_pct = (eval_wins/n_eval_games) * 100
-                    if np.mean(eval_scores) >= best_eval_score:
-                        best_eval_score = np.mean(eval_scores)
+                    # if np.mean(eval_scores) >= best_eval_score:
+                    #    best_eval_score = np.mean(eval_scores)
+                    #    agent.save_models()
+                    if eval_wins >= eval_best_win_n and agent.epsilon == 0:
+                        eval_best_win_n = eval_wins
+                        # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
                         agent.save_models()
-                    # if eval_wins >= eval_best_win_n and agent.epsilon == 0:
-                    #     eval_best_win_n = eval_wins
-                    #     # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
-                    #     agent.save_models()
 
                     print('############################\nevaluation after', n_steps, 'iterations.\n', n_eval_games,
                           'games avg SCORE:', np.mean(eval_scores),
@@ -270,10 +272,11 @@ class WandbTrainer:
                     # source, canvas, pointer = state
                     state = np.append(source.reshape(-1), canvas.reshape(-1))
                     state = np.append(state, pointer)
+                    state = np.array(state, dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
                     # action = agent.choose_action(state)
                     action, act_scores = agent.choose_action_debug(state)
                     # action = random.randint(0,4)
-                    state_next, reward, done = self.env.step(action)
+                    state_next, reward, done, is_win = self.env.step(action)
                     print(action, act_scores, reward)
                     shape_n_next, source_next, canvas_next, pointer_next = state_next
                     # source_next, canvas_next, pointer_next = state_next
@@ -297,7 +300,7 @@ class WandbTrainer:
                       'games avg SCORE:',
                       np.mean(test_scores), '\n win pct (%):', (test_wins / (test_game_idx + 1)) * 100)
 
-            wandb.log({str(n_test_games) + " test games, avg score": np.mean(test_scores[n_test_games_to_avg:])})
+            wandb.log({str(n_test_games) + " test games, avg score": np.mean(test_scores[n_test_games_to_avg-1:])})
             wandb.log({str(n_test_games) + " test games, win pct": test_wins / n_test_games * 100})
 
             plot_scores_testing(test_scores, n_test_games_to_avg, os.path.join(self.plots_path, name) + '_test.png')  # 'plots/' + name + '_test.png')

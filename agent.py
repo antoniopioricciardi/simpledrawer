@@ -21,8 +21,8 @@ class Agent:
 
         self.memory = ReplayMemory(mem_size, n_states, n_actions)
 
-        self.eval_Q = DDQN(n_states, n_actions, n_hidden, lr, name, checkpoint_dir)
-        self.target_Q = DDQN(n_states, n_actions, n_hidden, lr, name, checkpoint_dir)
+        self.eval_Q = DDQN(n_states, n_actions, n_hidden, lr, name, checkpoint_dir).float()
+        self.target_Q = DDQN(n_states, n_actions, n_hidden, lr, name, checkpoint_dir).float()
 
     def is_training(self, training=True):
         if training:
@@ -42,7 +42,7 @@ class Agent:
             action = np.random.choice(self.n_actions)
         else:
             # input_dims is a batch, therefore we need to create a batch for every single observation
-            state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
+            state = torch.tensor(state).to(self.eval_Q.device)
             actions = self.eval_Q.forward(state)
             action = torch.argmax(actions).item()
         return action
@@ -52,13 +52,13 @@ class Agent:
             action = np.random.choice(self.n_actions)
         else:
             # input_dims is a batch, therefore we need to create a batch for every single observation
-            state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
+            state = torch.tensor(state).to(self.eval_Q.device)
             actions = self.eval_Q.forward(state)
             action = torch.argmax(actions).item()
         return action, actions
 
     def choose_action_eval(self, state):
-        state = torch.tensor(state, dtype=torch.float32).to(self.eval_Q.device)
+        state = torch.tensor(state).to(self.eval_Q.device)
         actions = self.eval_Q.forward(state)
         action = torch.argmax(actions).item()
         return action
@@ -91,27 +91,20 @@ class Agent:
 
         states, actions, rewards, next_states, dones = self.sample_memory()
         indices = np.arange(self.batch_size)  # array of numbers in range [0, ..., batch_size]
-
         q_pred = self.eval_Q.forward(states)[indices, actions]
         q_next = self.target_Q.forward(next_states)
         q_eval = self.eval_Q.forward(next_states)
 
+
         next_actions = torch.argmax(q_eval, dim=1)
-
-        print(dones)
-        print('######')
-        print(q_next)
-        print('######')
         q_next[dones] = 0.0
-        print(q_next)
-        print('######')
         target_next_q_pred = q_next[indices, next_actions]
-
 
         q_target = rewards + self.gamma * target_next_q_pred
         # q_target = rewards + self.gamma * q_next[indices, next_actions]
 
         loss = self.eval_Q.loss(q_target, q_pred).to(self.eval_Q.device)
+
         loss.backward()
         # clip_grad_norm_(self.eval_Q.parameters(), 10)
         self.eval_Q.optimizer.step()

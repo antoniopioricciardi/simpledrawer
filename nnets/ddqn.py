@@ -34,7 +34,7 @@ class DDQN(nn.Module):
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))  # action values
 
-        actions = F.tanh(self.fc3(x))  # action values
+        actions = self.fc3(x)  # action values
         #x = F.relu(self.fc1(state))
         #actions = self.fc2(x)
         return actions
