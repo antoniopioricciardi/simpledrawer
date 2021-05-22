@@ -123,5 +123,5 @@ if __name__ == '__main__':
         #     env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=True, start_on_line=True)
 
         wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name=sweeps_project_name,
-                                   env=env, test_name=test_name, training=False, testing=True, games_to_avg=50)
+                                   env=env, test_name=test_name, training=True, testing=False, games_to_avg=50)
         wdb_trainer.do_sweeps()
