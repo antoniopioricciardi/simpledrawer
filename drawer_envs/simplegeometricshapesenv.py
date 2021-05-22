@@ -170,6 +170,7 @@ class SimpleGeometricShapesEnv:
                 random_col = random.choice((0, self.length-1))
             self.source_matrix[random_row, random_col] = 0
 
+
 class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
     def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False):  # , start_on_line=False):
         super().__init__(side_length, max_steps, random_starting_pos)

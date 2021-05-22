@@ -98,8 +98,8 @@ def train_skip_wandb():
 from temptrainer import train
 from agent import Agent
 if __name__ == '__main__':
-    side_length = 10
-    max_steps = 300
+    side_length = 7
+    max_steps = 100
     sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
