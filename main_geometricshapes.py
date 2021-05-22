@@ -1,8 +1,9 @@
 import wandb
 
-from drawer_envs.drawerenv_simple_random_geometricshape import SimpleRandomGeometricShapeEnv
-from drawer_envs.drawerenv_random_geometricshape_nonepisodic import SimpleRandomGeometricNonEpisodicShapeEnv
+from drawer_envs.drawerenv_simple_random_geometricshape_throwable import SimpleRandomGeometricShapeEnv
+# from drawer_envs.drawerenv_random_geometricshape_nonepisodic import SimpleRandomGeometricNonEpisodicShapeEnv
 from wandb_trainer import WandbTrainer
+from drawer_envs.simplegeometricshapesenv import *
 
 # TODO: Implement Pygame
 # TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
@@ -29,7 +30,7 @@ sweep_config = {
         },
         'gamma': {
             #'values': [0.4, 0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
-            'values': [ 0.6] #[0.6, 0.9]
+            'values': [0.7] #[0.6, 0.9]
         },
         'fc_layer_size': {
             #'values': [64,128, 512]
@@ -97,15 +98,17 @@ def train_skip_wandb():
 from temptrainer import train
 from agent import Agent
 if __name__ == '__main__':
-    side_length = 5
-    max_steps = 50
+    side_length = 10
+    max_steps = 300
     sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
         # test_name = tests_todo[TEST_N]
         print('#######################\nTraining/Testing env:', test_name, '\n#######################\n')
-        env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+        # env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+        # env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+        env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False, random_missing_pixel=False)
         # train_skip_wandb()
         # env = SimpleRandomGeometricShapeEnv(side_length, max_steps, random_starting_pos=False)
         # if TEST_N == 0:
