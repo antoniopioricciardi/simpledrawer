@@ -7,9 +7,9 @@ import numpy as np
 
 
 class DuelingDDQN(nn.Module):
-    def __init__(self, lr, input_n, output_n, name, checkpoint_dir):
-        """
+    def __init__(self, input_n, output_n, n_hidden=256, lr=1e-3, name='Duelingddqn', checkpoint_dir='models'):
 
+        """
         :param lr:
         :param input_n:
         :param output_n: number of actions
@@ -20,12 +20,14 @@ class DuelingDDQN(nn.Module):
         self.checkpoint_dir = checkpoint_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
 
-        # input_n[0] is the number of channels for the input images (4x1, 4 frames by one channel since we have grayscaled images)
-        # 32 number of outgoing filters
+        self.fc1 = nn.Linear(input_n, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
+        self.value = nn.Linear(n_hidden, 1)  # find the value of a given set of states (therefore a single output for each element in the batch)
+        self.advantage = nn.Linear(n_hidden, output_n)  #  advantage tells the advantage of each action at a given set of states
 
-        self.fc1 = nn.Linear(input_n, 512)
-        self.value = nn.Linear(512, 1)  # find the value of a given set of states (therefore a single output for each element in the batch)
-        self.advantage = nn.Linear(512, output_n)  # advantage tells the advantage of each action at a given set of states
+        # self.fc1 = nn.Linear(input_n, 512)
+        # self.value = nn.Linear(512, 1)  # find the value of a given set of states (therefore a single output for each element in the batch)
+        # self.advantage = nn.Linear(512, output_n)  # advantage tells the advantage of each action at a given set of states
 
         #self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
@@ -35,14 +37,18 @@ class DuelingDDQN(nn.Module):
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
+        x = F.relu(self.fc2(x))  # action values
         value = self.value(x)
         advantages = self.advantage(x)
         return value, advantages
 
     def save_checkpoint(self):
-        print('... saving checkpoint ...')
+        print('....saving model....')
         torch.save(self.state_dict(), self.checkpoint_file)
 
     def load_checkpoint(self):
         print('... loading checkpoint ...')
-        self.load_state_dict(torch.load(self.checkpoint_file))
+        if self.device.type == 'cpu':
+            self.load_state_dict(torch.load(self.checkpoint_file, map_location=torch.device('cpu')))
+        else:
+            self.load_state_dict(torch.load(self.checkpoint_file))

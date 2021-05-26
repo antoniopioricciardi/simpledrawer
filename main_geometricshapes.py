@@ -1,9 +1,10 @@
 import wandb
 
-from drawer_envs.drawerenv_simple_random_geometricshape_throwable import SimpleRandomGeometricShapeEnv
 # from drawer_envs.drawerenv_random_geometricshape_nonepisodic import SimpleRandomGeometricNonEpisodicShapeEnv
-from wandb_trainer import WandbTrainer
+from wandb_sweeper import WandbTrainer
 from drawer_envs.simplegeometricshapesenv import *
+from agents.agent import *
+from agents.DuelingDDQNAgent import *
 
 # TODO: Implement Pygame
 # TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
@@ -29,8 +30,8 @@ sweep_config = {
             'values': [1e-3]
         },
         'gamma': {
-            'values': [0.4, 0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
-            #'values': [0.7] #[0.6, 0.9]
+            #'values': [0.4, 0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
+            'values': [0.6] #[0.6, 0.9]
         },
         'fc_layer_size': {
             #'values': [64,128, 512]
@@ -59,12 +60,12 @@ config_defaults = {
     'gamma': 0.9,
     'epsilon': 1,
     'epsilon_min': 0.0,
-    'epsilon_dec': 1e-5,
+    'epsilon_dec': 1e-5, # 2.5e-6,#1e-5,
     'mem_size': 100000,
     'batch_size': 64,
     'optimizer': 'adam',
     'fc_layer_size': 128,
-    'max_steps': 1200000 #350000,
+    'max_steps': 1600000 #350000,
     # 'n_eval_games': 100,
     # 'eval_games_freq': 200,
     # 'n_test_games': 1000,
@@ -80,6 +81,7 @@ def train_skip_wandb():
     epsilon = 1
     epsilon_min = 0
     epsilon_dec = 1e-5
+    # epsilon_dec = 2.5e-6  # from 1 to 0 in 400000 steps
     mem_size = 1000000
     batch_size = 32
     # checkpoint_dir = config.checkpoint_dir
@@ -89,19 +91,22 @@ def train_skip_wandb():
     n_hidden = 128
     name = test_name + '/lr' + str(lr) + '_gamma' + str(gamma) + '_epsilon' + str(
         epsilon) + '_batch_size' + str(batch_size) + '_fc_size' + str(n_hidden)
-    agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
-    batch_size, name, 'models/')
-
+    # agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+    # batch_size, name, 'models/')
+    # agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+    #               batch_size, name, 'models/')
+    agent = DuelingDDQNAgent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+                  batch_size, name, 'models/')
     train(env, agent, name, n_train_games_to_avg=50, eval_games_freq=1000, n_eval_games=50)
 
 
-from temptrainer import train
-from agent import Agent
+from trainer import train
+from agents.agent import Agent
 if __name__ == '__main__':
     side_length = 7
     max_steps = 100
     sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
-    tests_todo = ['ddqn_simplegeometricshapes']
+    tests_todo = ['duelingddqn_simplegeometricshapes']# ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
         # test_name = tests_todo[TEST_N]

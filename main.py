@@ -1,7 +1,7 @@
 import wandb
 
 from environment import Environment
-from wandb_trainer import WandbTrainer
+from wandb_sweeper import WandbTrainer
 
 wandb.login()
 

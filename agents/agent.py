@@ -21,8 +21,8 @@ class Agent:
 
         self.memory = ReplayMemory(mem_size, n_states, n_actions)
 
-        self.eval_Q = DDQN(n_states, n_actions, n_hidden, lr, name, checkpoint_dir).float()
-        self.target_Q = DDQN(n_states, n_actions, n_hidden, lr, name, checkpoint_dir).float()
+        self.eval_Q = DDQN(n_states, n_actions, n_hidden, lr, name + '_eval', checkpoint_dir).float()
+        self.target_Q = DDQN(n_states, n_actions, n_hidden, lr, name + '_target', checkpoint_dir).float()
 
     def is_training(self, training=True):
         if training:
@@ -30,7 +30,7 @@ class Agent:
             self.target_Q.train()
         else:
             self.eval_Q.eval()
-            self.eval_Q.eval()
+            self.target_Q.eval()
 
     def decrement_epsilon(self):
         #if self.epsilon < 0.2:
