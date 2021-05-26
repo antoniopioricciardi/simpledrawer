@@ -101,97 +101,6 @@ class SimpleGeometricShapesEnv:
         cv2.imshow("pr", final)  # this prevents code from running with wandb after first sweep
         cv2.waitKey(300)
 
-
-    # new_reward
-    def step(self, action):
-        is_win = False
-        chosen_action_str = ''
-        if self.show_debug_info:
-            print('source matrix:')
-            pprint(self.source_matrix)
-            print('canvas:')
-            pprint(self.canvas)
-            print('Agent position:', self.current_state)
-
-        if action == 0:  # down
-            if self.row < self.length - 1:  # avoid going out of bounds
-                self.current_state += self.length
-            chosen_action_str = 'down'
-        if action == 1:  # up
-            if self.row > 0:
-                self.current_state -= self.length
-            chosen_action_str = 'up'
-        if action == 2:  # move pointer left
-            if self.column > 0:
-                self.current_state -= 1
-            chosen_action_str = 'left'
-        if action == 3:  # move pointer right
-            if self.column < self.length - 1:  # avoid going out of bounds
-                self.current_state += 1
-            chosen_action_str = 'right'
-
-        if action < 4:
-            # obtain matrix coords for the drawer pointer
-            self.row = self.current_state // self.length
-            self.column = self.current_state % self.length
-            self.color_action = False
-
-        # simple reward - working
-        '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
-        if we colored the correct cell, get +1 reward'''
-        # reward = -1  # -1 per step
-        reward = 0
-        if self.source_matrix[self.row][self.column] == 1:
-            reward = 0  # unless the agent is in a cell that must be colored
-
-        if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
-            if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-                reward = 1  # if we colored the correct cell, get +1 reward
-            self.canvas[self.row][self.column] = 1
-            chosen_action_str = 'color cell'
-            self.color_action = True
-
-        if self.show_debug_info:
-            print('chosen action:', chosen_action_str)
-            print('-----------')
-            self.show_debug_info = False
-
-        # if all the correct cells are colored, the episode can end
-        if np.array_equal(self.source_matrix, self.canvas):
-            if self.shape_n == 0:
-                self.reset()
-                self.done = True
-                self.num_completed = 0
-                is_win = True
-            # reward = 100
-            else:
-                self.reset()
-                self.num_completed += 1
-
-            # if self.num_completed == 50:
-            #     self.done = True
-            #     self.num_completed = 0
-            # self.done = True
-        elif self.step_count == self.max_steps:
-            self.done = True
-            self.shape_n = 0
-            # if np.sum(self.canvas[1] == 1) != self.length:
-            #    reward = -100
-        self.step_count += 1
-        if self.done:
-            cv2.destroyAllWindows()
-
-        reward = 0
-        if self.canvas_old[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
-            reward = 1  # if we colored the correct cell, get +1 reward
-
-        self.canvas_old = self.canvas.copy()
-        return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
-        # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
-
-
-
-
     '''SHAPES CREATION'''
 
     def __delete_pixel(self):
@@ -262,9 +171,21 @@ class SimpleGeometricShapesEnv:
                 random_col = random.choice((0, self.length-1))
             self.source_matrix[random_row, random_col] = 0
 
+
 class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
-    def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False):  # , start_on_line=False):
+    def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=False):  # , start_on_line=False):
+        """
+
+        :param side_length:
+        :param max_steps:
+        :param random_starting_pos:
+        :param random_missing_pixel:
+        :param subtract_canvas: whether the source input states must be provided complete or only as a
+        difference with the already drawn canvas
+        """
         super().__init__(side_length, max_steps, random_starting_pos)
+        self.subtract_canvas = subtract_canvas
+        self.complete_source_matrix = self.source_matrix.copy()
 
     def reset(self):
         self.canvas = np.zeros((self.length, self.length))
@@ -275,6 +196,7 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         self.source_matrix = np.zeros((self.length, self.length))
         # random_shape_n = random.randint(0, len(self.shapes_list) - 1)
         self.shapes_list[self.shape_n]()  # call the function to create a random shape
+        self.complete_source_matrix = self.source_matrix.copy()
         self.row = self.current_state // self.length
         self.column = self.current_state % self.length
 
@@ -293,7 +215,7 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         chosen_action_str = ''
         if self.show_debug_info:
             print('source matrix:')
-            pprint(self.source_matrix)
+            pprint(self.complete_source_matrix)
             print('canvas:')
             pprint(self.canvas)
             print('Agent position:', self.current_state)
@@ -326,11 +248,11 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
         reward = 0
-        if self.source_matrix[self.row][self.column] == 1:
+        if self.complete_source_matrix[self.row][self.column] == 1:
             reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4:  # if we drew, we have to check whether the drawn cell is the right one
-            if self.canvas[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
+            if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
@@ -342,16 +264,16 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
             self.show_debug_info = False
 
         # if all the correct cells are colored, the episode can end
-        if np.array_equal(self.source_matrix, self.canvas):
+        if np.array_equal(self.complete_source_matrix, self.canvas):
             if self.shape_n == 0:
                 self.reset()
                 self.done = True
-                self.num_completed = 0
+                # self.num_completed = 0
                 is_win = True
             # reward = 100
             else:
                 self.reset()
-                self.num_completed += 1
+                # self.num_completed += 1
 
             # if self.num_completed == 50:
             #     self.done = True
@@ -365,6 +287,8 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         self.step_count += 1
         if self.done:
             cv2.destroyAllWindows()
+        self.source_matrix = self.complete_source_matrix - self.canvas
+        self.source_matrix[self.source_matrix == -1] = 0
         return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
