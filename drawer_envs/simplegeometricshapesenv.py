@@ -17,6 +17,7 @@ class SimpleGeometricShapesEnv:
         self.actions = np.array([0, 1, 2, 3, 4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length), dtype=np.float32)
         self.canvas = np.zeros((self.length, self.length), dtype=np.float32)
+        self.canvas_old = np.zeros((self.length, self.length), dtype=np.float32)
         self.current_state = 0
         self.row = 0
         self.column = 0
@@ -179,6 +180,12 @@ class SimpleGeometricShapesEnv:
         self.step_count += 1
         if self.done:
             cv2.destroyAllWindows()
+
+        reward = 0
+        if self.canvas_old[self.row][self.column] == 0 and self.source_matrix[self.row][self.column] == 1:
+            reward = 1  # if we colored the correct cell, get +1 reward
+
+        self.canvas_old = self.canvas.copy()
         return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
@@ -254,7 +261,6 @@ class SimpleGeometricShapesEnv:
             else:
                 random_col = random.choice((0, self.length-1))
             self.source_matrix[random_row, random_col] = 0
-
 
 class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
     def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False):  # , start_on_line=False):
