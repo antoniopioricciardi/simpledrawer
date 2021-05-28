@@ -107,6 +107,10 @@ class SimpleGeometricShapesEnv:
         found = False
         while not found:
             random_missing_idx = random.randint(0, self.length ** 2 - 1)
+            # ''' GENERALIZATION TEST '''
+            # random_missing_idx = 2
+            # if random_missing_idx == 2:  # ONLY FOR 5x5 matrices!
+            #    continue
             row = random_missing_idx // self.length
             col = random_missing_idx % self.length
             if self.source_matrix[row][col] == 1:
@@ -164,12 +168,14 @@ class SimpleGeometricShapesEnv:
         self.source_matrix[self.length - 1, :] = 1
         # delete a random pixel
         if self.random_missing_pixel:
-            random_row = random.randint(0, self.length - 1)
-            if random_row == 0 or random_row == self.length - 1:
-                random_col = random.randint(0, self.length - 1)
-            else:
-                random_col = random.choice((0, self.length-1))
-            self.source_matrix[random_row, random_col] = 0
+            self.__delete_pixel()
+        # if self.random_missing_pixel:
+        #     random_row = random.randint(0, self.length - 1)
+        #     if random_row == 0 or random_row == self.length - 1:
+        #         random_col = random.randint(0, self.length - 1)
+        #     else:
+        #         random_col = random.choice((0, self.length-1))
+        #     self.source_matrix[random_row, random_col] = 0
 
 
 class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
@@ -183,7 +189,7 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         :param subtract_canvas: whether the source input states must be provided complete or only as a
         difference with the already drawn canvas
         """
-        super().__init__(side_length, max_steps, random_starting_pos)
+        super().__init__(side_length, max_steps, random_starting_pos, random_missing_pixel)
         self.subtract_canvas = subtract_canvas
         self.complete_source_matrix = self.source_matrix.copy()
 
@@ -287,8 +293,9 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         self.step_count += 1
         if self.done:
             cv2.destroyAllWindows()
-        self.source_matrix = self.complete_source_matrix - self.canvas
-        self.source_matrix[self.source_matrix == -1] = 0
+        if self.subtract_canvas:
+            self.source_matrix = self.complete_source_matrix - self.canvas
+            self.source_matrix[self.source_matrix == -1] = 0
         return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 

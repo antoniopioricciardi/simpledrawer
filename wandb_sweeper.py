@@ -8,6 +8,8 @@ from agents.DuelingDDQNAgent import DuelingDDQNAgent
 from trainer import train
 from utils_plot import plot_scores_testing
 
+def show_q_values(matrix_side_length: int, x, y, values):
+    return
 
 class WandbTrainer:
     def __init__(self, config_defaults, sweep_config, sweeps_project_name, env, test_name, training=False, testing=True,
@@ -316,5 +318,4 @@ class WandbTrainer:
             print('#############')
             print('Losses per states')
             print(losses_per_states)
-
 

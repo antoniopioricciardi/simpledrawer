@@ -30,8 +30,8 @@ sweep_config = {
             'values': [1e-3]
         },
         'gamma': {
-            'values': [0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
-            #'values': [0.6] #[0.6, 0.9]
+            # 'values': [0.6, 0.7, 0.9, 0.99]#[0.6, 0.7, 0.9]
+            'values': [0.6] #[0.6, 0.9]
         },
         'fc_layer_size': {
             #'values': [64,128, 512]
@@ -65,7 +65,7 @@ config_defaults = {
     'batch_size': 64,
     'optimizer': 'adam',
     'fc_layer_size': 128,
-    'max_steps': 1600000 #350000,
+    'max_steps': 2000000 #350000,
     # 'n_eval_games': 100,
     # 'eval_games_freq': 200,
     # 'n_test_games': 1000,
@@ -103,9 +103,9 @@ def train_skip_wandb():
 from trainer import train
 from agents.agent import Agent
 if __name__ == '__main__':
-    side_length = 7
-    max_steps = 100
-    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    side_length = 9 #7
+    max_steps = 100 #100
+    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['duelingddqn_simplegeometricshapes']# ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         print('#######################\nTraining/Testing env:', test_name, '\n#######################\n')
         # env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
         # env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
-        env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False, random_missing_pixel=False)
+        env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=True)
         # train_skip_wandb()
         # env = SimpleRandomGeometricShapeEnv(side_length, max_steps, random_starting_pos=False)
         # if TEST_N == 0:
