@@ -12,6 +12,9 @@ from utils_plot import plot_scores_testing
 
 
 def show_q_values(side_length: int, x, y, values):
+    # moving the position by 1 is necessary because we will then need to show extra possible movements TODO: riscrivi
+    x+=1
+    y+=1
     # TODO: INEFFICIENT. Every time we recreate a new matrix instead of modifying the old one. To be fixed.
     # MOREOVER: We only change the source matrix when reset is called.
     # initialize the matrix that will contain qvalues
@@ -20,8 +23,10 @@ def show_q_values(side_length: int, x, y, values):
     positions = [(0,1), (0,-1), (-1,0),(1,0),(0,0)]
 
     # scale values in [0,255]
+    print(values)
     values = values/values.max() * 255
-    for i in range(4):
+    print('sss')
+    for i in range(5):
         x_offset = positions[i][0]
         y_offset = positions[i][1]
         scores_matrix[x+x_offset][y+y_offset] = [128, values[i], 0]
@@ -31,9 +36,6 @@ def show_q_values(side_length: int, x, y, values):
 
     height, width, ch = scores_matrix_img.shape
     new_width, new_height = width + 1, height + 2  # width + width//20, height + height//8
-
-
-
 
 
     # Crate a new canvas with new width and height.
@@ -329,6 +331,8 @@ class WandbTrainer:
                     state = np.array(state, dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
                     # action = agent.choose_action(state)
                     action, act_scores = agent.choose_action_debug(state)
+                    act_scores = act_scores[1] # need to take advantages if working with DuelingDDQN
+                    show_q_values(source.shape[0],pointer[0], pointer[1], act_scores.detach().cpu().numpy()[0])
                     # action = random.randint(0,4)
                     state_next, reward, done, is_win = self.env.step(action)
                     print(action, act_scores, reward)
