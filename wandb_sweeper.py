@@ -2,14 +2,62 @@ import os
 import torch
 import wandb
 import numpy as np
+import cv2
 
+from PIL import Image
 from agents.agent import Agent
 from agents.DuelingDDQNAgent import DuelingDDQNAgent
 from trainer import train
 from utils_plot import plot_scores_testing
 
-def show_q_values(matrix_side_length: int, x, y, values):
-    return
+
+def show_q_values(side_length: int, x, y, values):
+    # TODO: INEFFICIENT. Every time we recreate a new matrix instead of modifying the old one. To be fixed.
+    # MOREOVER: We only change the source matrix when reset is called.
+    # initialize the matrix that will contain qvalues
+    # +2 because we need to be able to rappresent every movement even when the agent is at the matrix boundaries
+    scores_matrix = np.zeros((side_length+2, side_length+2, 3), dtype=np.uint8)
+    positions = [(0,1), (0,-1), (-1,0),(1,0),(0,0)]
+
+    # scale values in [0,255]
+    values = values/values.max() * 255
+    for i in range(4):
+        x_offset = positions[i][0]
+        y_offset = positions[i][1]
+        scores_matrix[x+x_offset][y+y_offset] = [128, values[i], 0]
+
+    scores_matrix_img = Image.fromarray(scores_matrix)
+    scores_matrix_img = np.uint8(scores_matrix_img)
+
+    height, width, ch = scores_matrix_img.shape
+    new_width, new_height = width + 1, height + 2  # width + width//20, height + height//8
+
+
+
+
+
+    # Crate a new canvas with new width and height.
+    source_background = np.ones((new_height, new_width, ch), dtype=np.uint8) * 125
+
+    # New replace the center of canvas with original image
+    padding_top, padding_left = 1, 0  # 60, 10
+
+    source_background[padding_top:padding_top + height, padding_left:padding_left + width] = scores_matrix_img
+
+    text1 = "Source image"
+    text2 = "Canvas"
+    text_color_list = np.array([255, 0, 0])
+    text_color = (int(text_color_list[0]), int(text_color_list[1]), int(text_color_list[2]))
+    # img1 = cv2.putText(source_background.copy(), text1, (int(0.25 * width), 30), cv2.FONT_HERSHEY_COMPLEX, 1,
+    #                   text_color)
+    # img2 = cv2.putText(canvas_background.copy(), text2, (int(0.25 * width), 30), cv2.FONT_HERSHEY_COMPLEX, 1,
+    #                   text_color)
+
+    # shape[1] is the width, it seems it needs to go first when resizing.
+    final = cv2.resize(source_background, (source_background.shape[1] * 30, source_background.shape[0] * 30), interpolation=cv2.INTER_NEAREST)
+    # cv2.imwrite("./debug.png", final)
+    cv2.imshow("pr", final)  # this prevents code from running with wandb after first sweep
+    cv2.waitKey(300)
 
 class WandbTrainer:
     def __init__(self, config_defaults, sweep_config, sweeps_project_name, env, test_name, training=False, testing=True,
