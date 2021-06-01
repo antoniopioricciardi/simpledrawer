@@ -7,6 +7,7 @@ import cv2
 from PIL import Image
 from agents.agent import Agent
 from agents.DuelingDDQNAgent import DuelingDDQNAgent
+from agents.agent_ddqn_double_out import AgentDoubleOut
 from trainer import train
 from utils_plot import plot_scores_testing
 
@@ -23,12 +24,13 @@ def show_q_values(side_length: int, x, y, values):
     positions = [(0,1), (0,-1), (-1,0),(1,0),(0,0)]
 
     # scale values in [0,255]
-    print(values)
+    values += values.min()
     values = values/values.max() * 255
+    print(values)
     print('sss')
     for i in range(5):
-        x_offset = positions[i][0]
-        y_offset = positions[i][1]
+        y_offset = positions[i][0]
+        x_offset = positions[i][1]
         scores_matrix[x+x_offset][y+y_offset] = [128, values[i], 0]
 
     scores_matrix_img = Image.fromarray(scores_matrix)
@@ -58,7 +60,7 @@ def show_q_values(side_length: int, x, y, values):
     # shape[1] is the width, it seems it needs to go first when resizing.
     final = cv2.resize(source_background, (source_background.shape[1] * 30, source_background.shape[0] * 30), interpolation=cv2.INTER_NEAREST)
     # cv2.imwrite("./debug.png", final)
-    cv2.imshow("pr", final)  # this prevents code from running with wandb after first sweep
+    cv2.imshow("pr2", final)  # this prevents code from running with wandb after first sweep
     cv2.waitKey(300)
 
 class WandbTrainer:
@@ -147,8 +149,11 @@ class WandbTrainer:
 
         # agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
         #               batch_size, name, checkpoint_dir)
-        agent = DuelingDDQNAgent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace,
-                                 mem_size, batch_size, name, checkpoint_dir)
+        # agent = DuelingDDQNAgent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace,
+        #                          mem_size, batch_size, name, checkpoint_dir)
+
+        agent = AgentDoubleOut(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+                      batch_size, name, checkpoint_dir)
         if self.training:
             train(name, self.env, agent, self.plots_path, config.max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games, using_wandb=True)
             # self.train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_games)
@@ -292,6 +297,86 @@ class WandbTrainer:
     #                 plot_scores_testing(eval_scores, n_eval_games, os.path.join(self.plots_path, name) + '_eval.png')#'plots/' + name + '_eval.png')
 
     def test(self, agent, name, n_test_games, n_test_games_to_avg):
+        # n_test_games = config.n_test_games
+        # n_test_games_to_avg = config.n_test_games_to_avg
+
+        n_states = self.env.num_states
+
+        # keep track of wins
+        starts_per_states = {i: 0 for i in range(n_states)}
+        wins_per_states = {i: 0 for i in range(n_states)}
+        losses_per_states = {i: 0 for i in range(n_states)}
+        '''########### TESTING ###########'''
+        # TODO: un def test diverso da quello di sotto gia fatto
+        # TODO: creare choose action per testing
+        print('########### TESTING ###########')
+        # agent.eval_Q.eval()
+        test_wins = 0
+        test_scores = []
+        agent.load_models()
+        with torch.no_grad():
+            agent.is_training(training=False)
+            for test_game_idx in range(n_test_games):
+                print('testssss')
+                done = False
+                test_score = 0
+                game_result = 'lost'
+                state = self.env.reset()
+                starting_state = self.env.starting_pos
+                starts_per_states[starting_state] += 1
+                while not done:
+                    self.env.render()
+                    # print(agent.epsilon)
+                    #if test_game_idx % 50 == 0:
+                    #    self.env.print_debug()
+                    shape_n, source, canvas, pointer = state
+                    # source, canvas, pointer = state
+                    state = np.append(source.reshape(-1), canvas.reshape(-1))
+                    state = np.append(state, pointer)
+                    state = np.array(state, dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
+                    # action = agent.choose_action(state)
+                    action, pen_state = agent.choose_action(state)
+
+                    # action = random.randint(0,4)
+                    state_next, reward, done, is_win = self.env.step_simultaneous(action, pen_state)
+                    print(reward)
+                    shape_n_next, source_next, canvas_next, pointer_next = state_next
+                    # source_next, canvas_next, pointer_next = state_next
+                    state = state_next
+
+                    test_score += reward
+                    test_score = round(test_score, 2)
+                test_scores.append(test_score)
+                if np.array_equal(source_next, canvas_next):
+                    test_wins += 1
+                    game_result = 'won'
+                    wins_per_states[starting_state] += 1
+                else:
+                    losses_per_states[starting_state] += 1
+                print('############################\n game', test_game_idx, '\nscore:', test_scores[-1], '- game',
+                      game_result)
+
+                # test_win_pct = (test_wins / n_test_games) * 100
+
+                print('############################\n', test_game_idx, 'games tested.\n', n_test_games,
+                      'games avg SCORE:',
+                      np.mean(test_scores), '\n win pct (%):', (test_wins / (test_game_idx + 1)) * 100)
+
+            wandb.log({str(n_test_games) + " test games, avg score": np.mean(test_scores[n_test_games_to_avg-1:])})
+            wandb.log({str(n_test_games) + " test games, win pct": test_wins / n_test_games * 100})
+
+            plot_scores_testing(test_scores, n_test_games_to_avg, os.path.join(self.plots_path, name) + '_test.png')  # 'plots/' + name + '_test.png')
+
+            print('Starts per states')
+            print(starts_per_states)
+            print('Wins per states')
+            print(wins_per_states)
+            print('#############')
+            print('Losses per states')
+            print(losses_per_states)
+
+
+    def test_working(self, agent, name, n_test_games, n_test_games_to_avg):
         # n_test_games = config.n_test_games
         # n_test_games_to_avg = config.n_test_games_to_avg
 

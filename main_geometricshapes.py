@@ -5,7 +5,7 @@ from wandb_sweeper import WandbTrainer
 from drawer_envs.simplegeometricshapesenv import *
 from agents.agent import *
 from agents.DuelingDDQNAgent import *
-
+from agents.agent_ddqn_double_out import *
 # TODO: Implement Pygame
 # TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
 
@@ -60,12 +60,12 @@ config_defaults = {
     'gamma': 0.9,
     'epsilon': 1,
     'epsilon_min': 0.0,
-    'epsilon_dec': 2.5e-6,#1e-5,
+    'epsilon_dec': 1e-5, # 2.5e-6,#1e-5,
     'mem_size': 100000,
     'batch_size': 64,
     'optimizer': 'adam',
     'fc_layer_size': 128,
-    'max_steps': 2000000 #350000,
+    'max_steps': 1500000 #350000,
     # 'n_eval_games': 100,
     # 'eval_games_freq': 200,
     # 'n_test_games': 1000,
@@ -74,7 +74,9 @@ config_defaults = {
 
 
 def train_skip_wandb():
-    env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+    # env = SimpleRandomGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False)
+    env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False,
+                                                       random_missing_pixel=False, subtract_canvas=True)
     replace = 1000
     lr = 0.001
     gamma = 0.6
@@ -87,7 +89,7 @@ def train_skip_wandb():
     # checkpoint_dir = config.checkpoint_dir
 
     n_states = env.num_states
-    n_actions = env.num_actions
+    n_actions = env.num_actions - 2
     n_hidden = 128
     name = test_name + '/lr' + str(lr) + '_gamma' + str(gamma) + '_epsilon' + str(
         epsilon) + '_batch_size' + str(batch_size) + '_fc_size' + str(n_hidden)
@@ -95,17 +97,19 @@ def train_skip_wandb():
     # batch_size, name, 'models/')
     # agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
     #               batch_size, name, 'models/')
-    agent = DuelingDDQNAgent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
-                  batch_size, name, 'models/')
-    train(env, agent, name, n_train_games_to_avg=50, eval_games_freq=1000, n_eval_games=50)
+    # agent = DuelingDDQNAgent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+    #              batch_size, name, 'models/')
+    agent = AgentDoubleOut(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
+                 batch_size, name, 'models/')
+    train(name, env, agent, n_train_games_to_avg=50, eval_games_freq=1000, n_eval_games=50, plots_path='plots/', max_steps=50)
 
 
 from trainer import train
 from agents.agent import Agent
 if __name__ == '__main__':
-    side_length = 9 #7
-    max_steps = 100 #100
-    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    side_length = 5 #7
+    max_steps = 50 #100
+    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas-simultanousactions_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['duelingddqn_simplegeometricshapes']# ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     for TEST_N, test_name in enumerate(tests_todo):
@@ -128,5 +132,5 @@ if __name__ == '__main__':
         #     env = Environment(side_length, max_steps, random_starting_pos=False, random_horizontal_line=True, start_on_line=True)
 
         wdb_trainer = WandbTrainer(config_defaults, sweep_config, sweeps_project_name=sweeps_project_name,
-                                   env=env, test_name=test_name, training=True, testing=False, games_to_avg=50)
+                                   env=env, test_name=test_name, training=False, testing=True, games_to_avg=50)
         wdb_trainer.do_sweeps()
