@@ -1,0 +1,40 @@
+program: main_geometricshapes.py
+method: grid #, random, bayesian
+metric:
+replace:
+  desc: number of steps before replacing target network
+  value: 500
+learning_rate:
+  desc: learning rate
+  value: 1e-3
+gamma:
+  desc: discount factor
+  value: 0.9
+epsilon:
+  desc: starting exploration probability
+  value: 1
+epsilon_min:
+  desc: minimum exploration probability
+  value: 0.0
+epsilon_dec:
+  desc: exploration decrease at every step
+  value: 1e-5 # 2.5e-6,#1e-5,
+mem_size:
+  desc: memory buffer size
+  value: 100000
+batch_size:
+  desc: batch size
+  value: 64
+optimizer:
+  desc: optimizer
+  value: 'adam'
+fc_layer_size:
+  desc: number of nodes for each layer
+  value: 128
+max_steps:
+  desc: number of steps to perform for training
+  value: 1500000 #350000,
+    # 'n_eval_games': 100,
+    # 'eval_games_freq': 200,
+    # 'n_test_games': 1000,
+    # 'n_test_games_to_avg': 50,

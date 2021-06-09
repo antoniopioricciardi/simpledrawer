@@ -1,7 +1,6 @@
-venv/
+../venv/
 .idea/
 .DS_Store
 wandb/*
 tests/*
 wandb/*
-config/wandbKey.py
