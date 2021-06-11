@@ -26,8 +26,7 @@ class SimpleGeometricShapesEnv:
         self.done = False
 
         self.max_state = (self.length ** 2) - 1
-        # self.num_states = 2 * (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
-        self.num_states = (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
+        self.num_states = 2 * (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
         self.max_steps = max_steps
 
         self.num_actions = len(self.actions)
@@ -532,7 +531,7 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
             if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
             else:
-                reward = -1 # -0.1
+                reward = -0.1
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
             self.color_action = True
