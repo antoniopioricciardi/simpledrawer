@@ -1,8 +1,8 @@
 import torch
 import numpy as np
 
-from old_stuff.nnets.ddqn_double_out import DDQNDoubleOutput
-from old_stuff.replaymemory_multiout import ReplayMemory
+from nnets.ddqn_double_out import DDQNDoubleOutput
+from replaymemory_multiout import ReplayMemory
 
 class AgentDoubleOut:
     def __init__(self, n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
@@ -20,7 +20,6 @@ class AgentDoubleOut:
         self.batch_size = batch_size
 
         self.memory = ReplayMemory(mem_size, n_states, n_actions)
-
         self.eval_Q = DDQNDoubleOutput(n_states, n_actions, n_hidden, lr, name + '_eval', checkpoint_dir).float()
         self.target_Q = DDQNDoubleOutput(n_states, n_actions, n_hidden, lr, name + '_target', checkpoint_dir).float()
 

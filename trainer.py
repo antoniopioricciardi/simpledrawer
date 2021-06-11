@@ -154,7 +154,8 @@ class Trainer:
                 #    print('win')
                 #    wins += 1
 
-                flat_state_next = np.append(source_next.reshape(-1), canvas_next.reshape(-1))
+                # flat_state_next = np.append(source_next.reshape(-1), canvas_next.reshape(-1))
+                flat_state_next = source_next.reshape(-1)
                 flat_state_next = np.append(flat_state_next, pointer_next)
 
                 # TODO: Try to not cast done to int
