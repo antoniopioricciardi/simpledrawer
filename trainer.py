@@ -76,6 +76,9 @@ class Trainer:
         self.eval_games_freq = eval_games_freq
         self.n_eval_games = n_eval_games
 
+        self.eval_best_win_n = 0
+        self.eval_best_score = -1000
+
         self.__create_paths()
 
     def __create_paths(self):
@@ -105,6 +108,10 @@ class Trainer:
         self.train(self.env, agent, config.max_steps, n_train_games_to_avg, eval_games_freq,
               n_eval_games, name, using_wandb=True)
 
+    def test(self, env, agent, n_games, name, is_eval=False, using_wandb=False, do_render=True):
+        self.eval(env, agent, n_games, name, is_eval=is_eval, using_wandb=using_wandb, do_render=do_render)
+
+
     def train(self, env, agent, max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games, name, using_wandb=False):
         scores = []
         epsilon_history = []
@@ -131,10 +138,11 @@ class Trainer:
                 # TODO: shape_n not used, for now
                 shape_n, source, canvas, pointer = state
                 # source, canvas, pointer = state
-                state = np.append(source.reshape(-1), canvas.reshape(-1))
+                # state = np.append(source.reshape(-1), canvas.reshape(-1))
+                state = source.reshape(-1)
                 state = np.append(state, pointer)
                 state = np.array(state,
-                                 dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
+                                 dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happens though...)
                 action, pen_state = agent.choose_action(state)
                 # action = random.randint(0,4)
                 state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
@@ -185,67 +193,71 @@ class Trainer:
             # TODO: un def test diverso da quello di sotto gia fatto
             # TODO: Creare choose action per testing
             if game_n % eval_games_freq == 0:
-                with torch.no_grad():
-                    is_win = False
-                    agent.is_training(False)
-                    best_eval_score = -100
-                    # agent.eval_Q.eval()
-                    eval_wins = 0
-                    eval_scores = []
-                    for test_game_idx in range(n_eval_games):
-                        done = False
-                        eval_score = 0
-                        state = env.reset()
-                        while not done:
-                            # print(agent.epsilon)
-                            # if test_game_idx % 10 == 0:
-                            #    env.print_debug()
-                            shape_n, source, canvas, pointer = state
-                            # source, canvas, pointer = state
-                            state = np.append(source.reshape(-1), canvas.reshape(-1))
-                            state = np.append(state, pointer)
-                            state = np.array(state,
-                                             dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
+                self.eval(env, agent, n_eval_games, name, is_eval=True, using_wandb=using_wandb)
 
-                            action, pen_state = agent.choose_action(state)
-                            # action = random.randint(0,4)
-                            state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
-                            shape_n_next, source_next, canvas_next, pointer_next = state_next
+    def eval(self, env, agent, n_games, name, is_eval=False, using_wandb=False, do_render=False):
+        with torch.no_grad():
+            is_win = False
+            agent.is_training(False)
+            eval_wins = 0
+            eval_scores = []
+            for test_game_idx in range(n_games):
+                done = False
+                eval_score = 0
+                state = env.reset()
+                while not done:
+                    if do_render:
+                        self.env.render()
+                    # print(agent.epsilon)
+                    # if test_game_idx % 10 == 0:
+                    #    env.print_debug()
+                    shape_n, source, canvas, pointer = state
+                    # source, canvas, pointer = state
+                    # state = np.append(source.reshape(-1), canvas.reshape(-1))
+                    state = source.reshape(-1)
+                    state = np.append(state, pointer)
+                    state = np.array(state,
+                                     dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
 
-                            state = state_next
+                    action, pen_state = agent.choose_action(state)
+                    # action = random.randint(0,4)
+                    state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
+                    shape_n_next, source_next, canvas_next, pointer_next = state_next
 
-                            eval_score += reward
-                            eval_score = round(eval_score, 2)
+                    state = state_next
 
-                        eval_scores.append(eval_score)
+                    eval_score += reward
+                    eval_score = round(eval_score, 2)
 
-                        if is_win:
-                            eval_wins += 1
-                    # test_win_pct = (eval_wins/n_eval_games) * 100
-                    # if np.mean(eval_scores) >= best_eval_score:
-                    #    best_eval_score = np.mean(eval_scores)
-                    #    agent.save_models()
-                    if eval_wins >= eval_best_win_n and agent.epsilon == 0:
-                        eval_best_win_n = eval_wins
-                        # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
-                        agent.save_models()
+                eval_scores.append(eval_score)
 
-                    print('############################\nevaluation after', n_steps, 'iterations.\n', n_eval_games,
-                          'games avg SCORE:', np.mean(eval_scores),
-                          'win pct (%)', (eval_wins / n_eval_games) * 100, '\n##################\n')
-                    if using_wandb:
-                        wandb.log({str(n_eval_games) + " eval games, win pct (%)": (eval_wins / n_eval_games) * 100})
-                        wandb.log({str(n_eval_games) + " eval games, avg rewards": np.mean(eval_scores)})
-                    plot_scores_testing(eval_scores, n_eval_games,
-                                        os.path.join(self.plots_path, name) + '_eval.png')  # 'plots/' + name + '_eval.png')
+                if is_win:
+                    eval_wins += 1
+            # test_win_pct = (eval_wins/n_eval_games) * 100
+            # if np.mean(eval_scores) >= best_eval_score:
+            #    best_eval_score = np.mean(eval_scores)
+            #    agent.save_models()
+
+            # if eval_score >= self.eval_best_score and agent.epsilon == 0:
+            #     self.eval_best_score = eval_score
+            if eval_wins >= self.eval_best_win_n and agent.epsilon == 0:
+                self.eval_best_win_n = eval_wins
+                # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
+                if is_eval:
+                    agent.save_models()
+
+            eval_or_test_name = 'eval' if is_eval else 'test'
+            print('############################\n' + eval_or_test_name + '\n', n_games,
+                  'games avg SCORE:', np.mean(eval_scores),
+                  'win pct (%)', (eval_wins / n_games) * 100, '\n##################\n')
+            if using_wandb:
+                wandb.log({str(n_games) + " " + str(eval_or_test_name) + " games, win pct (%)": (eval_wins / n_games) * 100})
+                wandb.log({str(n_games) + " " + str(eval_or_test_name) + " games, avg rewards": np.mean(eval_scores)})
+            plot_scores_testing(eval_scores, n_games,
+                                os.path.join(self.plots_path, name) + '_eval.png')  # 'plots/' + name + '_eval.png')
 
 
-
-
-
-
-
-
+# TODO: Code above can be thrown away
 class WandbTrainer:
     def __init__(self, config_defaults, sweeps_project_name, env, test_name, training=False, testing=True,
                  games_to_avg=50):
@@ -287,11 +299,6 @@ class WandbTrainer:
         n_test_games = 1
         n_test_games_to_avg = 1
 
-        # Initialize a new wandb run
-        # run = wandb.init(config=self.config_defaults)
-        # Config is a variable that holds and saves hyperparameters and inputs
-        # config = wandb.config
-
         replace = config.replace
         lr = config.learning_rate  # 0.001
         gamma = config.gamma  # 0.5
@@ -322,76 +329,6 @@ class WandbTrainer:
         train(name, self.env, agent, self.plots_path, config.max_steps, n_train_games_to_avg, eval_games_freq,
               n_eval_games, using_wandb=True)
         print('s3')
-    #def do_sweeps(self):
-    #    wandb.agent(self.sweep_id, self.__train_test)
-
-    # def __train_test(self):
-    #     # config_defaults = {
-    #     #     'replace': 1000,
-    #     #     'learning_rate': 1e-3,
-    #     #     'gamma': 0.6,
-    #     #     'epsilon': 0.8,
-    #     #     'epsilon_min': 0.0,
-    #     #     'epsilon_dec': 1e-5,
-    #     #     'mem_size': 50000,
-    #     #     'batch_size': 64,
-    #     #     'optimizer': 'adam',
-    #     #     'fc_layer_size': 128,
-    #     #     'max_steps': 400000  # 350000,
-    #     #     # 'n_eval_games': 100,
-    #     #     # 'eval_games_freq': 200,
-    #     #     # 'n_test_games': 1000,
-    #     #     # 'n_test_games_to_avg': 50,
-    #     # }
-    #
-    #     """NON HYPERPARAMETERS"""
-    #     #training = False
-    #     #testing = True
-    #     # TODO: move them out of here
-    #     checkpoint_dir = self.models_path# 'models'
-    #     n_train_games_to_avg = 50
-    #     n_eval_games = 10
-    #     eval_games_freq = 200
-    #     n_test_games = 1
-    #     n_test_games_to_avg = 1
-    #
-    #     # Initialize a new wandb run
-    #     run = wandb.init(config=self.config_defaults)
-    #     # Config is a variable that holds and saves hyperparameters and inputs
-    #     config = wandb.config
-    #
-    #     replace = config.replace
-    #     lr = config.learning_rate  # 0.001
-    #     gamma = config.gamma  # 0.5
-    #     epsilon = config.epsilon
-    #     epsilon_min = config.epsilon_min
-    #     epsilon_dec = config.epsilon_dec
-    #     mem_size = config.mem_size
-    #     batch_size = config.batch_size  # 32
-    #     # checkpoint_dir = config.checkpoint_dir
-    #
-    #     n_states = self.env.num_states
-    #     n_actions = self.env.num_actions
-    #     n_hidden = config.fc_layer_size  # 128
-    #
-    #     name = self.test_name + '/lr' + str(lr) + '_gamma' + str(gamma) + '_epsilon' + str(epsilon) + '_batch_size' + str(
-    #         batch_size) + '_fc_size' + str(n_hidden)
-    #
-    #     # agent = Agent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
-    #     #               batch_size, name, checkpoint_dir)
-    #     # agent = DuelingDDQNAgent(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace,
-    #     #                          mem_size, batch_size, name, checkpoint_dir)
-    #
-    #     agent = AgentDoubleOut(n_states, n_actions, n_hidden, lr, gamma, epsilon, epsilon_min, epsilon_dec, replace, mem_size,
-    #                   batch_size, name, checkpoint_dir)
-    #     if self.training:
-    #         train(name, self.env, agent, self.plots_path, config.max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games, using_wandb=True)
-    #         # self.train(config, agent, name, n_train_games_to_avg, eval_games_freq, n_eval_games)
-    #     if self.testing:
-    #         agent.epsilon = 0.0
-    #         self.test(agent, name, n_test_games, n_test_games_to_avg)
-    #
-    #     run.finish()
 
     def test(self, agent, name, n_test_games, n_test_games_to_avg):
         # n_test_games = config.n_test_games
@@ -471,7 +408,6 @@ class WandbTrainer:
             print('#############')
             print('Losses per states')
             print(losses_per_states)
-
 
     def test_working(self, agent, name, n_test_games, n_test_games_to_avg):
         # n_test_games = config.n_test_games

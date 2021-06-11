@@ -1,5 +1,6 @@
 import os
 import wandb
+import argparse
 
 from trainer import Trainer
 from config.wandbKey import WANDB_KEY
@@ -14,6 +15,8 @@ from agents.agent_ddqn_double_out import *
 
 # For offline metrics tracking
 working_offline = False
+parser = argparse.ArgumentParser()
+parser.add_argument('-working_offline', type=bool, default=False, help='False if we do want to log wandb offline')
 if working_offline:
     # if not existing, wandbKey.py file must be created, containing a single string variable named "WANDB_KEY"
     # with your wandb API key as a value
@@ -67,8 +70,6 @@ if __name__ == '__main__':
     wdb_trainer.wandb_train(name, config, agent)
     #train(name, env, agent, wdb_trainer.plots_path, max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games,
     #      using_wandb=True)
-
-
 
 
 

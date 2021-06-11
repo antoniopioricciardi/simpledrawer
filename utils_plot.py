@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def plot_scores(scores, epsilons, n_episodes_to_consider, figure_file):
     avg_scores = []
     x = []
