@@ -532,11 +532,11 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
             if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
             else:
-                reward = -1 # -0.1
-                self.done = True
-                self.shape_n = 0
-                return (self.shape_n, self.source_matrix, self.canvas,
-                        (self.row, self.column)), reward, self.done, False
+                reward = -0.1  # -0.1
+                # self.done = True
+                # self.shape_n = 0
+                # return (self.shape_n, self.source_matrix, self.canvas,
+                #         (self.row, self.column)), reward, self.done, False
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
             self.color_action = True

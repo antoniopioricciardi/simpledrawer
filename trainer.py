@@ -111,7 +111,6 @@ class Trainer:
     def test(self, env, agent, n_games, name, is_eval=False, using_wandb=False, do_render=True):
         self.eval(env, agent, n_games, name, is_eval=is_eval, using_wandb=using_wandb, do_render=do_render)
 
-
     def train(self, env, agent, max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games, name, using_wandb=False):
         scores = []
         epsilon_history = []
@@ -178,10 +177,10 @@ class Trainer:
             #     best_train_avg_score = np.mean(scores[-n_train_games_to_avg:])
             #     agent.save_models()
             if game_n % n_train_games_to_avg == 0:
-                print('############################\ntraining recap after', n_steps, 'steps and', game_n,
+                print('training recap after', n_steps, 'steps and', game_n,
                       'games.\n', '50 games avg SCORE:', np.mean(scores[-n_train_games_to_avg:]),
                       'eps:', agent.epsilon, '50 games win pct', wins / n_train_games_to_avg,
-                      '\n##################\n')
+                      '\n')
                 plot_scores(scores, epsilon_history, n_train_games_to_avg,
                             os.path.join(self.plots_path, name) + '.png')  # 'plots/' + name + '.png')
                 if using_wandb:
@@ -197,6 +196,8 @@ class Trainer:
                 self.eval(env, agent, n_eval_games, name, is_eval=True, using_wandb=using_wandb)
 
     def eval(self, env, agent, n_games, name, is_eval=False, using_wandb=False, do_render=False):
+        if not is_eval:  # if it's not eval, it's testing
+            agent.load_models()
         with torch.no_grad():
             is_win = False
             agent.is_training(False)

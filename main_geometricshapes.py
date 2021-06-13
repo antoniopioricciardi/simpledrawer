@@ -26,14 +26,14 @@ if working_offline:
 config_defaults = {
     'replace': 500,
     'learning_rate': 1e-3,
-    'gamma': 0.9,
+    'gamma': 0.6,
     'epsilon': 1,
     'epsilon_min': 0.0,
     'epsilon_dec': 1e-5, # 2.5e-6,#1e-5,
     'mem_size': 100000,
-    'batch_size': 64,
+    'batch_size': 32, #64
     'optimizer': 'adam',
-    'fc_layer_size': 128,
+    'fc_layer_size': 1024,
     'max_steps': 1500000 #350000,
     # 'n_eval_games': 100,
     # 'eval_games_freq': 200,
@@ -44,7 +44,7 @@ config_defaults = {
 if __name__ == '__main__':
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
-    side_length = 5 #7
+    side_length = 7
     max_steps = 50 #100
     n_train_games_to_avg = 50
     eval_games_freq = 200
@@ -66,8 +66,11 @@ if __name__ == '__main__':
     agent = AgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
                            config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
                            config.mem_size, config.batch_size, name, wdb_trainer.models_path)
-
     wdb_trainer.wandb_train(name, config, agent)
+    # agent.epsilon=0.0
+    # agent.load_models()
+    n_test_games = 1
+    # wdb_trainer.test(env, agent, n_test_games, name)
     #train(name, env, agent, wdb_trainer.plots_path, max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games,
     #      using_wandb=True)
 
