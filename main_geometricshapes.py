@@ -8,6 +8,7 @@ from drawer_envs.simplegeometricshapesenv import *
 from agents.agent import *
 from agents.DuelingDDQNAgent import *
 from agents.agent_ddqn_double_out import *
+from various_tests.dueling_double_out.DuelingDDQNAgent_double_out import DuelingDDQNAgentDoubleOut
 
 # TODO: Implement Pygame
 # TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
@@ -63,7 +64,10 @@ if __name__ == '__main__':
                                                        random_missing_pixel=False, subtract_canvas=True)
     wdb_trainer = Trainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
 
-    agent = AgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
+    # agent = AgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
+    #                      config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
+    #                       config.mem_size, config.batch_size, name, wdb_trainer.models_path)
+    agent = DuelingDDQNAgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
                            config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
                            config.mem_size, config.batch_size, name, wdb_trainer.models_path)
     wdb_trainer.wandb_train(name, config, agent)
