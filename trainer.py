@@ -259,7 +259,7 @@ class Trainer:
                                 os.path.join(self.plots_path, name) + '_eval.png')  # 'plots/' + name + '_eval.png')
 
 
-# TODO: Code above can be thrown away
+# TODO: Code below can be deleted
 class WandbTrainer:
     def __init__(self, config_defaults, sweeps_project_name, env, test_name, training=False, testing=True,
                  games_to_avg=50):
