@@ -137,8 +137,8 @@ class StoppableTrainer:
                 # TODO: shape_n not used, for now
                 shape_n, source, canvas, pointer = state
                 # source, canvas, pointer = state
-                # state = np.append(source.reshape(-1), canvas.reshape(-1))
-                state = source.reshape(-1)
+                state = np.append(source.reshape(-1), canvas.reshape(-1))
+                # state = source.reshape(-1)
                 state = np.append(state, pointer)
                 state = np.array(state,
                                  dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happens though...)
@@ -153,8 +153,8 @@ class StoppableTrainer:
                 #    print('win')
                 #    wins += 1
 
-                # flat_state_next = np.append(source_next.reshape(-1), canvas_next.reshape(-1))
-                flat_state_next = source_next.reshape(-1)
+                flat_state_next = np.append(source_next.reshape(-1), canvas_next.reshape(-1))
+                # flat_state_next = source_next.reshape(-1)
                 flat_state_next = np.append(flat_state_next, pointer_next)
 
                 # TODO: Try to not cast done to int
@@ -215,8 +215,8 @@ class StoppableTrainer:
                     #    env.print_debug()
                     shape_n, source, canvas, pointer = state
                     # source, canvas, pointer = state
-                    # state = np.append(source.reshape(-1), canvas.reshape(-1))
-                    state = source.reshape(-1)
+                    state = np.append(source.reshape(-1), canvas.reshape(-1))
+                    # state = source.reshape(-1)
                     state = np.append(state, pointer)
                     state = np.array(state,
                                      dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
