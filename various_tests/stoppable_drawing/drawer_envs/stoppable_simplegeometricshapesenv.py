@@ -529,13 +529,19 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
             reward = 0  # unless the agent is in a cell that must be colored
 
         if action == 4: # with action 4 we go to next env
-
+            self.done=True
+            is_win=False
+            if np.array_equal(self.complete_source_matrix, self.canvas):
+                # TODO: should we give a bonus reward for correctly completing the drawing?
+                if self.shape_n == 0:
+                    is_win = True
+            return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
 
         if pen_state == 1:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
-            else:
-                reward = -0.1  # -0.1
+            # else:
+            #     reward = -0.1  # -0.1
                 # self.done = True
                 # self.shape_n = 0
                 # return (self.shape_n, self.source_matrix, self.canvas,
@@ -543,6 +549,8 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
             self.canvas[self.row][self.column] = 1
             chosen_action_str = 'color cell'
             self.color_action = True
+        if pen_state == 0:
+            self.color_action = False
 
         is_win = False
         chosen_action_str = ''
@@ -576,29 +584,14 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
             self.column = self.current_state % self.length
             # self.color_action = False
 
-
         if self.show_debug_info:
             print('chosen action:', chosen_action_str)
             print('-----------')
             self.show_debug_info = False
 
         # if all the correct cells are colored, the episode can end
-        if np.array_equal(self.complete_source_matrix, self.canvas):
-            if self.shape_n == 0:
-                self.reset()
-                self.done = True
-                # self.num_completed = 0
-                is_win = True
-            # reward = 100
-            else:
-                self.reset()
-                # self.num_completed += 1
 
-            # if self.num_completed == 50:
-            #     self.done = True
-            #     self.num_completed = 0
-            # self.done = True
-        elif self.step_count == self.max_steps:
+        if self.step_count == self.max_steps:
             self.done = True
             self.shape_n = 0
             # if np.sum(self.canvas[1] == 1) != self.length:

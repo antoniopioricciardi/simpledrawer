@@ -9,6 +9,8 @@ from agents.agent import *
 from agents.DuelingDDQNAgent import *
 from agents.agent_ddqn_double_out import *
 from various_tests.dueling_double_out.DuelingDDQNAgent_double_out import DuelingDDQNAgentDoubleOut
+from various_tests.stoppable_drawing.trainer_stoppable import StoppableTrainer
+from various_tests.stoppable_drawing.drawer_envs.stoppable_simplegeometricshapesenv import StoppableSimpleSequentialGeometricNonEpisodicShapeEnv
 
 # TODO: Implement Pygame
 # TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
@@ -43,14 +45,16 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
+    training = True
+    testing = False
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
-    side_length = 7
+    side_length = 5
     max_steps = 50 #100
     n_train_games_to_avg = 50
     eval_games_freq = 200
     n_eval_games = 1
-    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas-simultanousactions_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas-simultaneousactions_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
     tests_todo = ['duelingddqn_simplegeometricshapes']# ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     test_name = tests_todo[0]
@@ -60,9 +64,11 @@ if __name__ == '__main__':
         config.epsilon) + '_batch_size' + str(
         config.batch_size) + '_fc_size' + str(config.fc_layer_size)
 
-    env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False,
-                                                       random_missing_pixel=False, subtract_canvas=True)
-    wdb_trainer = Trainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
+    # env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False,
+    #                                                    random_missing_pixel=False, subtract_canvas=True)
+    env = StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=True)
+    # wdb_trainer = Trainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
+    wdb_trainer = StoppableTrainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
 
     agent = AgentDoubleOut(env.num_states, env.num_actions-1, config.fc_layer_size, config.learning_rate, config.gamma,
                          config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
@@ -70,10 +76,13 @@ if __name__ == '__main__':
     # agent = DuelingDDQNAgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
     #                        config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
     #                        config.mem_size, config.batch_size, name, wdb_trainer.models_path)
-    wdb_trainer.wandb_train(name, config, agent)
-    # agent.epsilon=0.0
-    # agent.load_models()
-    # n_test_games = 1
-    # wdb_trainer.test(env, agent, n_test_games, name)
+    if training:
+        wdb_trainer.wandb_train(name, config, agent)
+    if testing:
+        agent.epsilon=0.0
+        agent.load_models()
+        n_test_games = 1
+        wdb_trainer.test(env, agent, n_test_games, name)
+
     #train(name, env, agent, wdb_trainer.plots_path, max_steps, n_train_games_to_avg, eval_games_freq, n_eval_games,
     #      using_wandb=True)
