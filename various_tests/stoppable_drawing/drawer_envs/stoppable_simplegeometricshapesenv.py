@@ -398,7 +398,7 @@ class SimpleGeometricShapesEnv:
         #     self.source_matrix[random_row, random_col] = 0
 
 
-class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
+class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
     def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=False):  # , start_on_line=False):
         """
 
@@ -528,6 +528,9 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         if self.complete_source_matrix[self.row][self.column] == 1:
             reward = 0  # unless the agent is in a cell that must be colored
 
+        if action == 4: # with action 4 we go to next env
+
+
         if pen_state == 1:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
@@ -582,7 +585,7 @@ class SimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
         # if all the correct cells are colored, the episode can end
         if np.array_equal(self.complete_source_matrix, self.canvas):
             if self.shape_n == 0:
-                # self.reset()
+                self.reset()
                 self.done = True
                 # self.num_completed = 0
                 is_win = True
