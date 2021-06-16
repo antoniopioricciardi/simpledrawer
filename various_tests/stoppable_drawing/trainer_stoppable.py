@@ -199,6 +199,7 @@ class StoppableTrainer:
         if not is_eval:  # if it's not eval, it's testing
             agent.load_models()
         with torch.no_grad():
+            step_count = 0
             is_win = False
             agent.is_training(False)
             eval_wins = 0
@@ -208,6 +209,7 @@ class StoppableTrainer:
                 eval_score = 0
                 state = env.reset()
                 while not done:
+                    step_count += 1
                     if do_render:
                         self.env.render()
                     # print(agent.epsilon)
@@ -222,6 +224,8 @@ class StoppableTrainer:
                                      dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
 
                     action, pen_state = agent.choose_action(state)
+                    if step_count == 4:
+                        action = 4
                     # action = random.randint(0,4)
                     state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
                     shape_n_next, source_next, canvas_next, pointer_next = state_next

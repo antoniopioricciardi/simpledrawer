@@ -26,8 +26,8 @@ class SimpleGeometricShapesEnv:
         self.done = False
 
         self.max_state = (self.length ** 2) - 1
-        # self.num_states = 2 * (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
-        self.num_states = (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
+        self.num_states = 2 * (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
+        # self.num_states = (self.length ** 2) + 2  # last + 2 is for x and y coords of agent's position
         self.max_steps = max_steps
 
         self.num_actions = len(self.actions)
