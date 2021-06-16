@@ -435,6 +435,26 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         self.shape_n = self.shape_n % len(self.shapes_list)
         return self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)  # self.current_state
 
+    def next_drawing(self):
+        self.canvas = np.zeros((self.length, self.length))
+        self.current_state = 0
+        self.row = 0
+        self.column = 0
+
+        self.source_matrix = np.zeros((self.length, self.length))
+        # random_shape_n = random.randint(0, len(self.shapes_list) - 1)
+        self.shapes_list[self.shape_n]()  # call the function to create a random shape
+        self.complete_source_matrix = self.source_matrix.copy()
+        self.row = self.current_state // self.length
+        self.column = self.current_state % self.length
+
+        self.step_count = 0
+        self.color_action = False
+        self.starting_pos = self.current_state
+
+        self.shape_n += 1
+        self.shape_n = self.shape_n % len(self.shapes_list)
+
     # new_reward
     def step(self, action):
         is_win = False
@@ -520,21 +540,23 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
     def step_simultaneous(self, action, pen_state):
+        is_win = False
+
         # simple reward - working
         '''reward is -1 per step, unless the agent is in a cell that must be colored. Moreover,
         if we colored the correct cell, get +1 reward'''
         # reward = -1  # -1 per step
         reward = 0
-        if self.complete_source_matrix[self.row][self.column] == 1:
-            reward = 0  # unless the agent is in a cell that must be colored
-
-        if action == 4: # with action 4 we go to next env
-            self.done=True
-            is_win=False
-            if np.array_equal(self.complete_source_matrix, self.canvas):
-                # TODO: should we give a bonus reward for correctly completing the drawing?
-                if self.shape_n == 0:
+        # if self.complete_source_matrix[self.row][self.column] == 1:
+        #     reward = 0  # unless the agent is in a cell that must be colored
+        if action == 4:  # with action 4 we go to next env
+            if self.shape_n == 0:
+                self.done = True
+                if np.array_equal(self.complete_source_matrix, self.canvas):
+                    # TODO: should we give a bonus reward for correctly completing the drawing?
                     is_win = True
+            else:
+                self.next_drawing()
             return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
 
         if pen_state == 1:  # if we drew, we have to check whether the drawn cell is the right one
