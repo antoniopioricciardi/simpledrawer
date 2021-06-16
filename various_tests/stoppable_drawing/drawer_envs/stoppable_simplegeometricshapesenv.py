@@ -574,7 +574,6 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         if pen_state == 0:
             self.color_action = False
 
-        is_win = False
         chosen_action_str = ''
         if self.show_debug_info:
             print('source matrix:')
