@@ -224,8 +224,6 @@ class StoppableTrainer:
                                      dtype=np.float32)  # prevent automatic casting to float64 (don't know why that happened though...)
 
                     action, pen_state = agent.choose_action(state)
-                    if step_count == 4:
-                        action = 4
                     # action = random.randint(0,4)
                     state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
                     shape_n_next, source_next, canvas_next, pointer_next = state_next
@@ -241,17 +239,18 @@ class StoppableTrainer:
                     eval_wins += 1
 
             # test_win_pct = (eval_wins/n_eval_games) * 100
-            if np.mean(eval_scores) >= self.eval_best_score:
+            if np.mean(eval_scores) >= self.eval_best_score and agent.epsilon == 0:
                 self.eval_best_score = np.mean(eval_scores)
-                agent.save_models()
+                if is_eval:
+                    agent.save_models()
 
             # if eval_score >= self.eval_best_score and agent.epsilon == 0:
             #     self.eval_best_score = eval_score
-            if eval_wins >= self.eval_best_win_n and agent.epsilon == 0:
-                self.eval_best_win_n = eval_wins
-                # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
-                if is_eval:
-                    agent.save_models()
+            # if eval_wins >= self.eval_best_win_n and agent.epsilon == 0:
+            #    self.eval_best_win_n = eval_wins
+            #    # TODO: What do we prefer? An agent that achieves higher reward but does not draw 100% correct, or an agent that draws well but takes more time? Reward functions, however, could change.
+                # if is_eval:
+                #     agent.save_models()
 
             eval_or_test_name = 'eval' if is_eval else 'test'
             print('############################\n' + eval_or_test_name + '\n', n_games,

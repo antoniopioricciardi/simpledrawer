@@ -550,7 +550,7 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         # if self.complete_source_matrix[self.row][self.column] == 1:
         #     reward = 0  # unless the agent is in a cell that must be colored
         if action == 4:  # with action 4 we go to next env
-            if self.shape_n == 0:
+            if self.shape_n == 0:  # if we visited all of the shapes
                 self.done = True
                 if np.array_equal(self.complete_source_matrix, self.canvas):
                     # TODO: should we give a bonus reward for correctly completing the drawing?
@@ -562,8 +562,8 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         if pen_state == 1:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
                 reward = 1  # if we colored the correct cell, get +1 reward
-            # else:
-            #     reward = -0.1  # -0.1
+            else:
+                reward = -0.1
                 # self.done = True
                 # self.shape_n = 0
                 # return (self.shape_n, self.source_matrix, self.canvas,
