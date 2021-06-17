@@ -45,8 +45,8 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    training = False
-    testing = True
+    training = True
+    testing = False
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
     side_length = 5
