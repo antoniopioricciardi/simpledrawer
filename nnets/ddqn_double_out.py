@@ -20,8 +20,8 @@ class DDQNDoubleOutput(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
 
         self.fc1 = nn.Linear(input_n, n_hidden)
-        self.fc2 = nn.Linear(n_hidden, n_hidden)
-        self.fc3 = nn.Linear(n_hidden, output_n)
+        self.fc2 = nn.Linear(n_hidden, 32)
+        self.fc3 = nn.Linear(32, output_n)
         self.pen_status = nn.Linear(n_hidden, 2)
         # self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.optimizer = optim.Adam(self.parameters(), lr=lr)

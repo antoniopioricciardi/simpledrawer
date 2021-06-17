@@ -6,7 +6,7 @@ import torch.optim as optim
 import numpy as np
 
 
-class DDQNDoubleOutput(nn.Module):
+class CNNDDQNDoubleOutput(nn.Module):
     def __init__(self, input_n, output_n, n_hidden=256, lr=1e-3, name='dqn', checkpoint_dir='models'):
         """
         :param lr:
@@ -15,19 +15,17 @@ class DDQNDoubleOutput(nn.Module):
         :param name: name of the network, for saving
         :param checkpoint_dir: directory in which to save the network
         """
-        super(DDQNDoubleOutput, self).__init__()
+        super(CNNDDQNDoubleOutput, self).__init__()
         self.checkpoint_dir = checkpoint_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
 
         # input_n[0] is the number of channels for the input images (4x1, 4 frames by one channel since we have grayscaled images)
         # 32 number of outgoing filters
-
         self.conv1 = nn.Conv2d(input_n, 8, kernel_size=(2,2), stride=(1,1))
         self.conv2 = nn.Conv2d(8, 8, kernel_size=(2,2), stride=(1,1))
         # self.conv3 = nn.Conv2d(16, 16, kernel_size=3, stride=1)
 
         fc_input_dims = self.calc_conv_output_dims(input_n)
-
 
         self.fc1 = nn.Linear(fc_input_dims, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
