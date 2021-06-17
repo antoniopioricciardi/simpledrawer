@@ -45,8 +45,8 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    training = True
-    testing = False
+    training = False
+    testing = True
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
     side_length = 5
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # wdb_trainer = Trainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
     wdb_trainer = StoppableTrainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
 
-    agent = AgentDoubleOut(env.num_states, env.num_actions-1, config.fc_layer_size, config.learning_rate, config.gamma,
+    agent = AgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
                          config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
                           config.mem_size, config.batch_size, name, wdb_trainer.models_path)
     # agent = DuelingDDQNAgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,

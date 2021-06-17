@@ -24,7 +24,7 @@ parameters:
     value: 0.0
   epsilon_dec:
     desc: exploration decrease at every step
-    value: 2.5e-6, #1e-5,
+    value: 2.5e-6 #1e-5,
   learning_rate:
     desc: learning rate
     value: 1e-3
