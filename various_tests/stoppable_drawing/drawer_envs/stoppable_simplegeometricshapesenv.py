@@ -41,7 +41,7 @@ class SimpleGeometricShapesEnv:
         self.color_action = False  # True if we colored in that step, False otherwise
         self.starting_pos = self.current_state
 
-        self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond]
+        self.shapes_list = [self.__create_smaller_square(), self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond]
         self.shapes_list_backup = self.shapes_list.copy()
         self.num_completed = 0
         self.shape_n = 0
@@ -389,14 +389,16 @@ class SimpleGeometricShapesEnv:
         # delete a random pixel
         if self.random_missing_pixel:
             self.__delete_pixel()
-        # if self.random_missing_pixel:
-        #     random_row = random.randint(0, self.length - 1)
-        #     if random_row == 0 or random_row == self.length - 1:
-        #         random_col = random.randint(0, self.length - 1)
-        #     else:
-        #         random_col = random.choice((0, self.length-1))
-        #     self.source_matrix[random_row, random_col] = 0
 
+    def __create_smaller_square(self):
+        # TODO: support for different shapes and shape size
+        self.source_matrix[1:-1, 1] = 1
+        self.source_matrix[1:-1, self.length - 2] = 1
+        self.source_matrix[1, 1:-1] = 1
+        self.source_matrix[self.length - 2, 1:-1] = 1
+        # delete a random pixel
+        if self.random_missing_pixel:
+            self.__delete_pixel()
 
 class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
     def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=False):  # , start_on_line=False):
