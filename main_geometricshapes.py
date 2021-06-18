@@ -45,13 +45,13 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    training = True
+    training = False
     testing = False
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
     side_length = 7
     max_steps = 50  # 100
-    n_train_games_to_avg = 0
+    n_train_games_to_avg = 50
     eval_games_freq = 200
     n_eval_games = 1
     sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas-simultaneousactions_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
