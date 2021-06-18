@@ -18,7 +18,7 @@ class DDQNDoubleOutput(nn.Module):
         super(DDQNDoubleOutput, self).__init__()
         self.checkpoint_dir = checkpoint_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
-        
+
         self.fc1 = nn.Linear(input_n, n_hidden)
         self.fc2 = nn.Linear(n_hidden, 32)
         self.fc3 = nn.Linear(32, output_n)

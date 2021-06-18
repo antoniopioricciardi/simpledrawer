@@ -629,6 +629,51 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
+    def get_pixel_states(self):
+        # TODO: INEFFICIENT. Every time we recreate a new matrix instead of modifying the old one. To be fixed.
+        # MOREOVER: We only change the source matrix when reset is called.
+        # source matrix to draw, initialized with black pixels
+        source = np.zeros((self.length, self.length, 3), dtype=np.uint8)
+        # set the correct pixels to white, according to the source matrix
+        source[self.source_matrix == 1] = [255, 255, 255]
+
+        canvas = np.zeros((self.length, self.length, 3), dtype=np.uint8)
+        canvas[self.canvas == 1] = [255, 255, 255]  # white
+        # TODO: color cells based on the fact that the pointer is on a cell that:
+        # TODO: is colored - needs to be colored
+        if self.color_action:
+            canvas[self.row, self.column] = [255, 255, 0]  # greenish
+        else:
+            canvas[self.row, self.column] = [0, 0, 255]  # red
+
+        source_img = Image.fromarray(source)
+        canvas_img = Image.fromarray(canvas)
+        # img = img.resize((16,16))
+        source_img = np.uint8(source_img)
+        canvas_img = np.uint8(canvas_img)
+
+        height, width, ch = source_img.shape
+        new_width, new_height = width + 1, height + 2  # width + width//20, height + height//8
+
+        # Crate a new canvas with new width and height.
+        source_background = np.ones((new_height, new_width, ch), dtype=np.uint8) * 125
+        canvas_background = np.ones((new_height, new_width, ch), dtype=np.uint8) * 125
+
+        # New replace the center of canvas with original image
+        padding_top, padding_left = 1, 0  # 60, 10
+
+        source_background[padding_top:padding_top + height, padding_left:padding_left + width] = source_img
+        canvas_background[padding_top:padding_top + height, padding_left:padding_left + width] = canvas_img
+
+        img1 = source_background
+        img2 = canvas_background
+        final = cv2.hconcat((img1, img2))
+        # shape[1] is the width, it seems it needs to go first when resizing.
+        # for a 5x5 matrix we will get a 150x150 image.
+        # here we concatenate horizontally 2 matrices
+        final = cv2.resize(final, (final.shape[1] * 30, final.shape[0] * 30), interpolation=cv2.INTER_NEAREST)
+        # cv2.imwrite("./debug.png", final)
+        return final
 
 class SimpleRandomGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
     def __init__(self, side_length: int, max_steps, random_starting_pos=False):  # , start_on_line=False):
