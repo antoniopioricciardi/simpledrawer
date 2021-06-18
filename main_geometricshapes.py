@@ -49,7 +49,7 @@ if __name__ == '__main__':
     testing = False
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
-    side_length = 5
+    side_length = 7
     max_steps = 50  # 100
     n_train_games_to_avg = 50
     eval_games_freq = 200
