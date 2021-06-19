@@ -12,6 +12,11 @@ from various_tests.dueling_double_out.DuelingDDQNAgent_double_out import Dueling
 from various_tests.stoppable_drawing.trainer_stoppable import StoppableTrainer
 from various_tests.stoppable_drawing.drawer_envs.stoppable_simplegeometricshapesenv import StoppableSimpleSequentialGeometricNonEpisodicShapeEnv
 
+from various_tests.cnn.cnn_trainer import CNNStoppableTrainer
+from various_tests.cnn.drawer_envs.cnn_stoppable_simplegeometricshapesenv import CNNStoppableSimpleSequentialGeometricNonEpisodicShapeEnv
+from various_tests.cnn.agents.cnn_agent_ddqn_double_out import CNNAgentDoubleOut
+
+
 # TODO: Implement Pygame
 # TODO: Environment in realtà è un "raccoglitore" di env. Con env.make('nomeenv') inizializziamo la simulazione scelta
 
@@ -49,7 +54,7 @@ if __name__ == '__main__':
     testing = False
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
-    side_length = 7
+    side_length = 5
     max_steps = 50  # 100
     n_train_games_to_avg = 50
     eval_games_freq = 200
@@ -66,11 +71,11 @@ if __name__ == '__main__':
 
     # env = SimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False,
     #                                                    random_missing_pixel=False, subtract_canvas=True)
-    env = StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=True)
+    env = CNNStoppableSimpleSequentialGeometricNonEpisodicShapeEnv(side_length, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=True)
     # wdb_trainer = Trainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
-    wdb_trainer = StoppableTrainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
+    wdb_trainer = CNNStoppableTrainer(env, test_name, sweeps_project_name, n_train_games_to_avg, eval_games_freq, n_eval_games)
 
-    agent = AgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
+    agent = CNNAgentDoubleOut(env.obs_space, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,
                          config.epsilon, config.epsilon_min, config.epsilon_dec, config.replace,
                           config.mem_size, config.batch_size, name, wdb_trainer.models_path)
     # agent = DuelingDDQNAgentDoubleOut(env.num_states, env.num_actions, config.fc_layer_size, config.learning_rate, config.gamma,

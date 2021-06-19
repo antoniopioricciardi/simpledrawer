@@ -14,6 +14,7 @@ class SimpleGeometricShapesEnv:
         :param random_starting_pos: whether the agent must start in a random position
         """
         self.length = side_length
+        self.obs_space = [3,210,360]
         self.actions = np.array([0, 1, 2, 3, 4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length), dtype=np.float32)
         self.canvas = np.zeros((self.length, self.length), dtype=np.float32)
@@ -401,7 +402,7 @@ class SimpleGeometricShapesEnv:
             self.__delete_pixel()
 
 
-class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
+class CNNStoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShapesEnv):
     def __init__(self, side_length: int, max_steps, random_starting_pos=False, random_missing_pixel=False, subtract_canvas=False):  # , start_on_line=False):
         """
 
@@ -436,7 +437,8 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
 
         self.shape_n += 1
         self.shape_n = self.shape_n % len(self.shapes_list)
-        return self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)  # self.current_state
+        image_state = self.get_image_states()
+        return self.shape_n, np.array(image_state), (self.row, self.column)  # self.current_state
 
     def next_drawing(self):
         self.canvas = np.zeros((self.length, self.length))
@@ -560,7 +562,8 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
                     is_win = True
             else:
                 self.next_drawing()
-            return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
+            image_state = self.get_image_states()
+            return (self.shape_n, image_state, (self.row, self.column)), reward, self.done, is_win
 
         if pen_state == 1:  # if we drew, we have to check whether the drawn cell is the right one
             if self.canvas[self.row][self.column] == 0 and self.complete_source_matrix[self.row][self.column] == 1:
@@ -626,10 +629,11 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         if self.subtract_canvas:
             self.source_matrix = self.complete_source_matrix - self.canvas
             self.source_matrix[self.source_matrix == -1] = 0
-        return (self.shape_n, self.source_matrix, self.canvas, (self.row, self.column)), reward, self.done, is_win
+        image_state = self.get_image_states()
+        return (self.shape_n, np.array(image_state), (self.row, self.column)), reward, self.done, is_win
         # return (self.shape_n, self.source_matrix, self.canvas, self.current_state), reward, self.done
 
-    def get_pixel_states(self):
+    def get_image_states(self):
         # TODO: INEFFICIENT. Every time we recreate a new matrix instead of modifying the old one. To be fixed.
         # MOREOVER: We only change the source matrix when reset is called.
         # source matrix to draw, initialized with black pixels
@@ -672,6 +676,9 @@ class StoppableSimpleSequentialGeometricNonEpisodicShapeEnv(SimpleGeometricShape
         # for a 5x5 matrix we will get a 150x150 image.
         # here we concatenate horizontally 2 matrices
         final = cv2.resize(final, (final.shape[1] * 30, final.shape[0] * 30), interpolation=cv2.INTER_NEAREST)
+        # TODO: a nice reshape
+        final = np.swapaxes(final, 0,2)
+        final = np.swapaxes(final, 1,2)
         # cv2.imwrite("./debug.png", final)
         return final
 

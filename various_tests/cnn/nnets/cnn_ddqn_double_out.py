@@ -21,11 +21,11 @@ class CNNDDQNDoubleOutput(nn.Module):
 
         # input_n[0] is the number of channels for the input images (4x1, 4 frames by one channel since we have grayscaled images)
         # 32 number of outgoing filters
-        self.conv1 = nn.Conv2d(input_n, 8, kernel_size=(2,2), stride=(1,1))
-        self.conv2 = nn.Conv2d(8, 8, kernel_size=(2,2), stride=(1,1))
-        # self.conv3 = nn.Conv2d(16, 16, kernel_size=3, stride=1)
+        self.conv1 = nn.Conv2d(3, 30, kernel_size=(5,5), stride=(5,5))
+        self.conv2 = nn.Conv2d(30, 60, kernel_size=(5,5), stride=(2,2))
+        self.conv3 = nn.Conv2d(60, 60, kernel_size=(3,3), stride=(1,1))
 
-        fc_input_dims = self.calc_conv_output_dims(input_n)
+        fc_input_dims = self.calc_conv_output_dims((3, 210, 360))  #  (input_n)
 
         self.fc1 = nn.Linear(fc_input_dims, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)
@@ -40,7 +40,12 @@ class CNNDDQNDoubleOutput(nn.Module):
         self.to(self.device)
 
     def forward(self, state):
-        x = F.relu(self.fc1(state))
+        state = F.relu(self.conv1(state))
+        state = F.relu(self.conv2(state))
+        state = F.relu(self.conv3(state))  # shape of (batch_size*num_filters*height*width) - h & w are of the final convolved image, not input img
+        # reshape conv3 out to need compatible with the input of the fc1
+        conv_state = state.view(state.size()[0], -1)  # select 1st dim (batch_size) and with -1 flatten the rest of the dimensions
+        x = F.relu(self.fc1(conv_state))
         x = F.relu(self.fc2(x))  # action values
 
         actions = self.fc3(x)  # action values
@@ -50,7 +55,7 @@ class CNNDDQNDoubleOutput(nn.Module):
         return actions, pen_out
 
     def calc_conv_output_dims(self, input_dims):
-        state = torch.zeros(1, input_dims)
+        state = torch.zeros(1, *input_dims)
         dims = self.conv1(state)
         dims = self.conv2(dims)
         dims = self.conv3(dims)
