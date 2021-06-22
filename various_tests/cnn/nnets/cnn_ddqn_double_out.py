@@ -25,7 +25,7 @@ class CNNDDQNDoubleOutput(nn.Module):
         self.conv2 = nn.Conv2d(30, 60, kernel_size=(5,5), stride=(2,2))
         self.conv3 = nn.Conv2d(60, 60, kernel_size=(3,3), stride=(1,1))
 
-        fc_input_dims = self.calc_conv_output_dims((3, 70, 120))  #  (input_n)
+        fc_input_dims = self.calc_conv_output_dims(input_n)  #  (input_n)
 
         self.fc1 = nn.Linear(fc_input_dims, n_hidden)
         self.fc2 = nn.Linear(n_hidden, n_hidden)

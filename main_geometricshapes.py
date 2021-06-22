@@ -34,7 +34,7 @@ if working_offline:
 config_defaults = {
     'replace': 500,
     'learning_rate': 1e-3,
-    'gamma': 0.9,
+    'gamma': 0.6,
     'epsilon': 1,
     'epsilon_min': 0.0,
     'epsilon_dec': 1e-5, # 2.5e-6,#1e-5,
@@ -50,16 +50,18 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    training = False
-    testing = True
+    training = True
+    testing = False
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
-    side_length = 5
+    side_length = 7
     max_steps = 50  # 100
     n_train_games_to_avg = 50
     eval_games_freq = 200
     n_eval_games = 1
-    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas-simultaneousactions_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    # sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-subtractcanvas-simultaneousactions_' + str(side_length) + 'x' + str(side_length) + '_' +str(max_steps) + '_steps'
+    sweeps_project_name = 'simpledrawerSEQUENTIALSHAPES-cnn_' + str(
+        side_length) + 'x' + str(side_length) + '_' + str(max_steps) + '_steps'
     tests_todo = ['duelingddqn_simplegeometricshapes']# ['ddqn_simplegeometricshapes']
     # TEST_N = 1  # 0 to 3 to choose the environment property from those in the list above
     test_name = tests_todo[0]

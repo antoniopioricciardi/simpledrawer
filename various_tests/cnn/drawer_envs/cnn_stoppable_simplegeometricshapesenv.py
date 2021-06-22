@@ -14,7 +14,7 @@ class SimpleGeometricShapesEnv:
         :param random_starting_pos: whether the agent must start in a random position
         """
         self.length = side_length
-        self.obs_space = [3,70,120]
+        self.obs_space = [3,90,160]
         self.actions = np.array([0, 1, 2, 3, 4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length), dtype=np.float32)
         self.canvas = np.zeros((self.length, self.length), dtype=np.float32)
@@ -42,9 +42,8 @@ class SimpleGeometricShapesEnv:
         self.color_action = False  # True if we colored in that step, False otherwise
         self.starting_pos = self.current_state
 
-        self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond, self.__create_smaller_square]
-        # self.shapes_list = [self.__create_square, self.__create_circle,
-        #                    self.__create_triangle, self.__create_diamond]
+        # self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond, self.__create_smaller_square]
+        self.shapes_list = [self.__create_square, self.__create_circle, self.__create_triangle, self.__create_diamond]
         self.shapes_list_backup = self.shapes_list.copy()
         self.num_completed = 0
         self.shape_n = 0
