@@ -155,11 +155,7 @@ class CNNStoppableTrainer:
                     action, pen_state = agent.choose_action(state)
                     # action = random.randint(0,4)
                     state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
-                    shape_n_next, image_state_next, pointer_next = state_next
-
-                    # TODO: Try to not cast done to int
-                    agent.store_transition(state, action, pen_state, reward, image_state_next, int(done))
-                    agent.learn()
+                    # shape_n_next, image_state_next, pointer_next = state_next
 
                     state = state_next
 

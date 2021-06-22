@@ -34,11 +34,11 @@ if working_offline:
 config_defaults = {
     'replace': 500,
     'learning_rate': 1e-3,
-    'gamma': 0.6,
+    'gamma': 0.9,
     'epsilon': 1,
     'epsilon_min': 0.0,
     'epsilon_dec': 1e-5, # 2.5e-6,#1e-5,
-    'mem_size': 100000,
+    'mem_size': 20000,  # 100000,
     'batch_size': 32, #64
     'optimizer': 'adam',
     'fc_layer_size': 1024,
@@ -50,8 +50,8 @@ config_defaults = {
 }
 
 if __name__ == '__main__':
-    training = True
-    testing = False
+    training = False
+    testing = True
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
     side_length = 5

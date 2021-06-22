@@ -43,7 +43,7 @@ class CNNAgentDoubleOut:
             pen_state = np.random.choice(2)
         else:
             # input_dims is a batch, therefore we need to create a batch for every single observation
-            state = torch.tensor(state).to(self.eval_Q.device)
+            state = torch.tensor([state], dtype=torch.float).to(self.eval_Q.device)
             actions, pen_states = self.eval_Q.forward(state)
             action = torch.argmax(actions).item()
             pen_state = torch.argmax(pen_states).item()
@@ -73,11 +73,11 @@ class CNNAgentDoubleOut:
         state, action, pen_state, reward, next_state, done = self.memory.sample_buffer(self.batch_size)
         # convert each memory element in a pytorch tensor and sent it to the device
         # (lowaercase .tensor() preserves the data type of the underlying numpy array
-        states = torch.tensor(state).to(self.eval_Q.device)
+        states = torch.tensor(state, dtype=torch.float).to(self.eval_Q.device)
         actions = torch.tensor(action).to(self.eval_Q.device)
         pen_states = torch.tensor(pen_state).to(self.eval_Q.device)
         rewards = torch.tensor(reward).to(self.eval_Q.device)
-        next_states = torch.tensor(next_state).to(self.eval_Q.device)
+        next_states = torch.tensor(next_state, dtype=torch.float).to(self.eval_Q.device)
         dones = torch.tensor(done, dtype=torch.bool).to(self.eval_Q.device)
 
         return states, actions, pen_states, rewards, next_states, dones
@@ -133,3 +133,20 @@ class CNNAgentDoubleOut:
         self.eval_Q.load_checkpoint()
         self.target_Q.load_checkpoint()
 
+
+# # Visualize feature maps
+# activation = {}
+# def get_activation(name):
+#     def hook(model, input, output):
+#         activation[name] = output.detach()
+#     return hook
+#
+# model.conv1.register_forward_hook(get_activation('conv1'))
+# data, _ = dataset[0]
+# data.unsqueeze_(0)
+# output = model(data)
+#
+# act = activation['conv1'].squeeze()
+# fig, axarr = plt.subplots(act.size(0))
+# for idx in range(act.size(0)):
+#     axarr[idx].imshow(act[idx])

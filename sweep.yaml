@@ -15,7 +15,7 @@ parameters:
     value: 1500000 #350000
   mem_size:
     desc: memory buffer size
-    value: 100000
+    value: 20000
   epsilon:
     desc: starting exploration probability
     value: 1
