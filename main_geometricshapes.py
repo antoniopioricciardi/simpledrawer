@@ -37,7 +37,7 @@ config_defaults = {
     'gamma': 0.6,
     'epsilon': 1,
     'epsilon_min': 0.0,
-    'epsilon_dec': 1e-5, # 2.5e-6,#1e-5,
+    'epsilon_dec': 2.5e-6,#1e-5,
     'mem_size': 20000,  # 100000,
     'batch_size': 32, #64
     'optimizer': 'adam',
