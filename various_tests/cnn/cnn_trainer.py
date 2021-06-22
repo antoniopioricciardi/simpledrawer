@@ -152,7 +152,9 @@ class CNNStoppableTrainer:
                     shape_n, image_state, pointer = state
 
                     state = image_state
-                    action, pen_state = agent.choose_action(state)
+                    # action, pen_state = agent.choose_action(state)
+                    action, pen_state = agent.choose_action_vis_activation(state)
+
                     # action = random.randint(0,4)
                     state_next, reward, done, is_win = env.step_simultaneous(action, pen_state)
                     # shape_n_next, image_state_next, pointer_next = state_next

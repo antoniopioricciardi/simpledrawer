@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
 
 from various_tests.cnn.nnets.cnn_ddqn_double_out import CNNDDQNDoubleOutput
 from nnets.ddqn_double_out import DDQNDoubleOutput
@@ -24,6 +25,9 @@ class CNNAgentDoubleOut:
         self.eval_Q = CNNDDQNDoubleOutput(n_states, n_actions, n_hidden, lr, name + '_eval', checkpoint_dir).float()
         self.target_Q = CNNDDQNDoubleOutput(n_states, n_actions, n_hidden, lr, name + '_target', checkpoint_dir).float()
 
+        # Visualize feature maps
+        self.activation = {}
+
     def is_training(self, training=True):
         if training:
             self.eval_Q.train()
@@ -47,6 +51,23 @@ class CNNAgentDoubleOut:
             actions, pen_states = self.eval_Q.forward(state)
             action = torch.argmax(actions).item()
             pen_state = torch.argmax(pen_states).item()
+        return action, pen_state
+
+    def choose_action_vis_activation(self, state):
+        # input_dims is a batch, therefore we need to create a batch for every single observation
+        state = torch.tensor([state], dtype=torch.float).to(self.eval_Q.device)
+
+        self.eval_Q.conv1.register_forward_hook(self.get_activation('conv1'))
+        actions, pen_states = self.eval_Q.forward(state)
+
+        act = self.activation['conv1'].squeeze()
+        fig, axarr = plt.subplots(act.size(0))
+        for idx in range(act.size(0)):
+            axarr[idx].imshow(act[idx])
+            # plt.show()
+
+        action = torch.argmax(actions).item()
+        pen_state = torch.argmax(pen_states).item()
         return action, pen_state
 
     def choose_action_debug(self, state):
@@ -133,20 +154,8 @@ class CNNAgentDoubleOut:
         self.eval_Q.load_checkpoint()
         self.target_Q.load_checkpoint()
 
+    def get_activation(self, name):
+        def hook(model, input, output):
+            self.activation[name] = output.detach()
 
-# # Visualize feature maps
-# activation = {}
-# def get_activation(name):
-#     def hook(model, input, output):
-#         activation[name] = output.detach()
-#     return hook
-#
-# model.conv1.register_forward_hook(get_activation('conv1'))
-# data, _ = dataset[0]
-# data.unsqueeze_(0)
-# output = model(data)
-#
-# act = activation['conv1'].squeeze()
-# fig, axarr = plt.subplots(act.size(0))
-# for idx in range(act.size(0)):
-#     axarr[idx].imshow(act[idx])
+        return hook

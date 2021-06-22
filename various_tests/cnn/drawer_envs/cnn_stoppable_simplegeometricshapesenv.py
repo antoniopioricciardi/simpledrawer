@@ -14,7 +14,8 @@ class SimpleGeometricShapesEnv:
         :param random_starting_pos: whether the agent must start in a random position
         """
         self.length = side_length
-        self.obs_space = [3,90,160]
+        # self.obs_space = [3,90,160]
+        self.obs_space = [3, 70, 120]
         self.actions = np.array([0, 1, 2, 3, 4])  # 0 move down, 1 move up, 2 move left, 3 move right, 4 color the cell
         self.source_matrix = np.zeros((self.length, self.length), dtype=np.float32)
         self.canvas = np.zeros((self.length, self.length), dtype=np.float32)
