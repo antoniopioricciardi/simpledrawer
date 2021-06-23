@@ -43,7 +43,7 @@ class CNNAgentDoubleOut:
 
     def choose_action(self, state):
         if np.random.random() < self.epsilon:
-            action = np.random.choice(self.n_actions)
+            action = np.random.choice(self.n_actions-1)
             pen_state = np.random.choice(2)
         else:
             # input_dims is a batch, therefore we need to create a batch for every single observation

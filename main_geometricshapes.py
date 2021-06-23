@@ -32,13 +32,13 @@ if working_offline:
     os.environ["WANDB_MODE"] = "dryrun"
 
 config_defaults = {
-    'replace': 500,
+    'replace': 1000,
     'learning_rate': 1e-3,
     'gamma': 0.6,
-    'epsilon': 1,
-    'epsilon_min': 0.0,
-    'epsilon_dec': 2.5e-6,#1e-5,
-    'mem_size': 20000,  # 100000,
+    'epsilon': 0.6,
+    'epsilon_min': 0.1,
+    'epsilon_dec': 1e-6, # 2.5e-6,#1e-5,
+    'mem_size': 50000,  # 100000,
     'batch_size': 32, #64
     'optimizer': 'adam',
     'fc_layer_size': 1024,
@@ -54,8 +54,8 @@ if __name__ == '__main__':
     testing = True
     run = wandb.init(config=config_defaults)  # , project="prova")
     config = wandb.config
-    side_length = 5
-    max_steps = 50  # 100
+    side_length = 7
+    max_steps = 60  # 100
     n_train_games_to_avg = 50
     eval_games_freq = 200
     n_eval_games = 1

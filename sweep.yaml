@@ -9,7 +9,7 @@ parameters:
     value: 'adam'
   replace:
     desc: number of steps before replacing target network
-    value: 500
+    value: 1000
   max_steps:
     desc: number of steps to perform for training
     value: 1500000 #350000
@@ -18,13 +18,13 @@ parameters:
     value: 20000
   epsilon:
     desc: starting exploration probability
-    value: 1
+    value: 0.6
   epsilon_min:
     desc: minimum exploration probability
     value: 0.0
   epsilon_dec:
     desc: exploration decrease at every step
-    value: 2.5e-6 #1e-5,
+    value: 1e-6 # 2.5e-6 #1e-5,
   learning_rate:
     desc: learning rate
     value: 1e-3
